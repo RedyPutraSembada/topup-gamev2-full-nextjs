@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+bun.lock
 /out/
 
 # production
