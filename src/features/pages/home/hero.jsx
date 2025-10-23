@@ -19,7 +19,7 @@ export default function HeroSlider() {
           alt="Featured game"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
+        <div className="absolute inset-0 bg-linear-to-r from-black/60 to-transparent flex items-center">
           <div className="px-8">
             <div className="w-12 h-12 bg-black/50 rounded-lg flex items-center justify-center mb-4">
               <span className="text-2xl">⚔️</span>

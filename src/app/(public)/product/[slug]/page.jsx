@@ -38,10 +38,10 @@ export default function GameDetailPage() {
           alt="Mobile Legends"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-gray-900/50 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 px-4 lg:px-8 pb-6">
           <div className="flex items-end gap-4">
-            <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden border-4 border-gray-800 flex-shrink-0">
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden border-4 border-gray-800 shrink-0">
               <img
                 src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=200&h=200&fit=crop"
                 alt="Mobile Legends Icon"
@@ -158,7 +158,7 @@ export default function GameDetailPage() {
               {/* Info Box */}
               <div className={`mb-6 p-3 rounded-lg bg-blue-900/20 border border-blue-800`}>
                 <div className="flex gap-2">
-                  <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                   <p className="text-sm text-blue-300">
                     Untuk menemukan User ID & Zone ID, silakan klik avatar Anda di kiri atas dalam game
                   </p>
@@ -199,7 +199,7 @@ export default function GameDetailPage() {
                 className={`w-full py-4 rounded-xl font-bold text-white transition-all ${
                   !selectedDiamond || !accountId || !serverId || !selectedPayment
                     ? 'bg-gray-700 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl'
+                    : 'bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl'
                 }`}
               >
                 {!selectedDiamond || !accountId || !serverId || !selectedPayment
@@ -219,23 +219,23 @@ export default function GameDetailPage() {
           <h2 className="text-xl font-bold mb-4">Cara Top Up Mobile Legends</h2>
           <ol className="space-y-3 text-gray-400">
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+              <span className="shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-sm font-bold">1</span>
               <span>Masukkan User ID & Zone ID Mobile Legends Anda</span>
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+              <span className="shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-sm font-bold">2</span>
               <span>Pilih nominal Diamond yang diinginkan</span>
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-sm font-bold">3</span>
+              <span className="shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-sm font-bold">3</span>
               <span>Pilih metode pembayaran</span>
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-sm font-bold">4</span>
+              <span className="shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-sm font-bold">4</span>
               <span>Klik "Beli Sekarang" dan selesaikan pembayaran</span>
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-sm font-bold">5</span>
+              <span className="shrink-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-sm font-bold">5</span>
               <span>Diamond akan otomatis masuk ke akun Anda dalam 1-5 menit</span>
             </li>
           </ol>

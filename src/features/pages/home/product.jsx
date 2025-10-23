@@ -1,4 +1,4 @@
-export default function AllProduct() {
+export default function Product() {
     const games = [
       { title: 'Genshin Impact', image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=300&h=400&fit=crop' },
       { title: 'Honkai Star Rail', image: 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=300&h=400&fit=crop' },
@@ -40,13 +40,13 @@ export default function AllProduct() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           {games.map((game, index) => (
             <div key={index} className="group cursor-pointer">
-              <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-2">
+              <div className="relative aspect-3/4 rounded-xl overflow-hidden mb-2">
                 <img
                   src={game.image}
                   alt={game.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <p className="text-sm font-medium">{game.title}</p>
                   </div>

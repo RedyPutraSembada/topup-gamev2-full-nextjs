@@ -86,7 +86,7 @@ export default function PaymentPage() {
             <div className={`rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} p-6`}>
               <h2 className="text-lg font-bold mb-4">Detail Produk</h2>
               <div className="flex gap-4">
-                <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
                   <img
                     src={transactionData.game.image}
                     alt={transactionData.game.name}
@@ -181,7 +181,7 @@ export default function PaymentPage() {
               {/* Status Info */}
               <div className={`mt-6 p-4 rounded-xl ${darkMode ? 'bg-green-900/20 border border-green-800' : 'bg-green-50 border border-green-200'}`}>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium text-green-400 mb-1">Pembayaran Terverifikasi</p>
                     <p className="text-sm text-green-300/80">
