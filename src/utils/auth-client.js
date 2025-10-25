@@ -1,6 +1,6 @@
 import { createAuthClient } from "better-auth/react";
 import { adminClient } from "better-auth/client/plugins";
-import { ac, admin, member, myCustomRole, user } from "./permissions";
+import { ac, admin, myCustomRole, user } from "./permissions";
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_APP_URL,
@@ -10,7 +10,6 @@ export const authClient = createAuthClient({
       roles: {
         admin,
         user,
-        member,
         myCustomRole,
       },
     }),
