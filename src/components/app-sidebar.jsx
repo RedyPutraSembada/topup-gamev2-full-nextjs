@@ -64,6 +64,14 @@ export function AppSidebar({ ...props }) {
       </SidebarHeader>
       <SidebarContent className="gap-0">
         {/* We create a collapsible SidebarGroup for each parent. */}
+        <SidebarMenuItem key={"dashboard"}>
+          <SidebarMenuButton
+            asChild
+            // isActive={item.isActive}
+          >
+            <a href={"/admin"}>Dasboard</a>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
         {data.navMain.map((item) => (
           <Collapsible
             key={item.title}

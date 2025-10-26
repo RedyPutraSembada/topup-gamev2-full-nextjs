@@ -19,9 +19,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
-import { DataTableProviderProduct } from "./data-table-provider-product";
+import { DataTableTypeProduct } from "./data-table-type-product";
 import { X } from "lucide-react";
-import { useGetProviderProduct } from "@/data/admin/provider-product/provider-product-datas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -50,25 +49,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AlertDialogFooter } from "@/components/ui/alert-dialog";
+import { useGetTypeProduct } from "@/data/admin/type-product/type-product-datas";
 import {
-  createProviderProduct,
-  deleteProviderProduct,
-  updateProviderProduct,
-} from "@/actions/admin/provider-product/data-provider-product";
+  createTypeProduct,
+  deleteTypeProduct,
+  updateTypeProduct,
+} from "@/actions/admin/type-product/data-type-product";
 
 const formSchema = z.object({
-  name: z
-    .string()
-    .min(1)
-    .transform((val) => val.toUpperCase()),
+  name: z.string().min(1),
   is_active: z.string(),
 });
 
-export function ProviderProductList() {
+export function TypeProductList() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [idProviders, setIdProviders] = useState(0);
+  const [idTypeProduct, setIdTypeProduct] = useState(0);
   const [resetSignal, setResetSignal] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -84,7 +81,7 @@ export function ProviderProductList() {
 
   const [debouncedName] = useDebounce(filter.name, 1000);
 
-  const { data, error, isLoading, refetch } = useGetProviderProduct(
+  const { data, error, isLoading, refetch } = useGetTypeProduct(
     {
       ...filter,
       name: debouncedName,
@@ -135,12 +132,12 @@ export function ProviderProductList() {
   };
 
   const createMutation = useMutation({
-    mutationFn: createProviderProduct,
+    mutationFn: createTypeProduct,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["provider-product"] });
+      queryClient.invalidateQueries({ queryKey: ["type-product"] });
       setOpen(false);
       reset();
-      toast.success("Provider Product created successfully");
+      toast.success("Type Product created successfully");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -148,13 +145,13 @@ export function ProviderProductList() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: updateProviderProduct,
+    mutationFn: updateTypeProduct,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["provider-product"] });
+      queryClient.invalidateQueries({ queryKey: ["type-product"] });
       setOpen(false);
-      setIdProviders(0);
+      setIdTypeProduct(0);
       reset();
-      toast.success("Provider Product updated successfully");
+      toast.success("Type Product updated successfully");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -162,11 +159,11 @@ export function ProviderProductList() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteProviderProduct,
+    mutationFn: deleteTypeProduct,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["provider-product"] });
+      queryClient.invalidateQueries({ queryKey: ["type-product"] });
       setDeleteConfirm(null);
-      toast.success("Provider Product deleted successfully");
+      toast.success("Type Product deleted successfully");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -174,7 +171,7 @@ export function ProviderProductList() {
   });
 
   const handleEdit = (values) => {
-    setIdProviders(values.id);
+    setIdTypeProduct(values.id);
     setValue("name", values.name);
     setValue("is_active", `${values.is_active}`);
     setOpen(true);
@@ -192,21 +189,21 @@ export function ProviderProductList() {
     try {
       await createMutation.mutateAsync(payload);
     } catch (error) {
-      console.error("Failed to create provider product:", error);
+      console.error("Failed to create Type Product:", error);
     }
   }
 
   async function onUpdate(values) {
     const payload = {
       ...values,
-      id: idProviders,
+      id: idTypeProduct,
       is_active: values.is_active === "1" ? 1 : 0, // Ubah is_active menjadi 1 atau 0
     };
 
     try {
       await updateMutation.mutateAsync(payload);
     } catch (error) {
-      console.error("Failed to update provider product:", error);
+      console.error("Failed to update Type Product:", error);
     }
   }
 
@@ -276,7 +273,7 @@ export function ProviderProductList() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Add Provider Product</DialogTitle>
+                <DialogTitle>Add Type Product</DialogTitle>
                 <DialogDescription>
                   Make changes to your type here. Click save when you're done.
                 </DialogDescription>
@@ -285,7 +282,7 @@ export function ProviderProductList() {
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(
-                      idProviders !== 0 ? onUpdate : onSubmit
+                      idTypeProduct !== 0 ? onUpdate : onSubmit
                     )}
                     className="space-y-8 "
                   >
@@ -348,7 +345,7 @@ export function ProviderProductList() {
         </div>
       </div>
       <>
-        <DataTableProviderProduct
+        <DataTableTypeProduct
           data={data?.data}
           pageCount={Math.ceil((data?.total || 0) / pageSize)}
           page={page}
