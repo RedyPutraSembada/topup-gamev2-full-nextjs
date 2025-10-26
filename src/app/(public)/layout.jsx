@@ -9,7 +9,6 @@ export default async function PublicLayout({ children }) {
             <Sidebar />
             <div className="lg:ml-48">
                 <Header />
-                <Toaster/>
                 <main className="flex flex-1 flex-col">
                     {children}
                 </main>

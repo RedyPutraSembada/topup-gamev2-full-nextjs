@@ -13,8 +13,8 @@ export default async function HomePage() {
         headers: await headers()
     });
 
-    if (session.user) {
-        if (session.user.role === "admin") {
+    if (session?.user) {
+        if (session?.user?.role === "admin") {
             redirect("/admin")
         }
     }
