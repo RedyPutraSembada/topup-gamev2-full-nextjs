@@ -58,6 +58,7 @@ import {
 
 const formSchema = z.object({
   name: z.string().min(1),
+  is_sale_account: z.string(),
   is_active: z.string(),
 });
 
@@ -94,7 +95,8 @@ export function TypeProductList() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      is_active: "0",
+      is_sale_account: "0",
+      is_active: "1",
     },
   });
 
@@ -173,6 +175,7 @@ export function TypeProductList() {
   const handleEdit = (values) => {
     setIdTypeProduct(values.id);
     setValue("name", values.name);
+    setValue("is_sale_account", `${values.is_sale_account}`);
     setValue("is_active", `${values.is_active}`);
     setOpen(true);
   };
@@ -184,6 +187,7 @@ export function TypeProductList() {
   async function onSubmit(values) {
     const payload = {
       ...values,
+      is_sale_account: values.is_sale_account === "1" ? 1 : 0,
       is_active: values.is_active === "1" ? 1 : 0,
     };
     try {
@@ -197,7 +201,8 @@ export function TypeProductList() {
     const payload = {
       ...values,
       id: idTypeProduct,
-      is_active: values.is_active === "1" ? 1 : 0, // Ubah is_active menjadi 1 atau 0
+      is_sale_account: values.is_sale_account === "1" ? 1 : 0,
+      is_active: values.is_active === "1" ? 1 : 0,
     };
 
     try {
@@ -307,33 +312,63 @@ export function TypeProductList() {
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name="is_active"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Status</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="1">Active</SelectItem>
-                              <SelectItem value="0">Inactive</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormDescription>
-                            status type product.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="is_sale_account"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Sale Account</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select status" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="1">Yes</SelectItem>
+                                <SelectItem value="0">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Status sale account.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="is_active"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Active Status</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select status" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="1">Active</SelectItem>
+                                <SelectItem value="0">Inactive</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Status type product.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     <AlertDialogFooter>
                       <Button type="submit">Save changes</Button>
                     </AlertDialogFooter>

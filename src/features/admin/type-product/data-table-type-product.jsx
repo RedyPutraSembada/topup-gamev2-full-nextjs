@@ -32,6 +32,7 @@ export function DataTableTypeProduct({
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Sale Account</TableHead>
                 <TableHead>Active</TableHead>
                 <TableHead></TableHead>
               </TableRow>
@@ -42,6 +43,9 @@ export function DataTableTypeProduct({
                   return (
                     <TableRow key={index}>
                       <TableCell>{item.name}</TableCell>
+                      <TableCell>
+                        {item.is_sale_account === 1 ? "True" : "False"}
+                      </TableCell>
                       <TableCell>
                         {item.is_active === 1 ? "Active" : "Inactive"}
                       </TableCell>

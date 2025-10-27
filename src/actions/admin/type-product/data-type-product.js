@@ -42,6 +42,7 @@ export async function createTypeProduct(data) {
   try {
     const [id] = await db("type_products").insert({
       name: data.name,
+      is_sale_account: data.is_sale_account,
       is_active: data.is_active,
     });
     return { success: true, id };
@@ -54,6 +55,7 @@ export async function updateTypeProduct(data) {
   try {
     await db("type_products").where("id", data.id).update({
       name: data.name,
+      is_sale_account: data.is_sale_account,
       is_active: data.is_active,
     });
 
