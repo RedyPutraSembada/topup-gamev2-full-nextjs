@@ -79,7 +79,7 @@ export async function updateDataWebsite(data) {
     return { success: true };
   } catch (error) {
     console.log(error);
-    throw new Error("Failed to update Event");
+    throw new Error("Failed to update Data Website");
   }
 }
 

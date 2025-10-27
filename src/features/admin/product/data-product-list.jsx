@@ -15,17 +15,19 @@ import {
   CredenzaTrigger,
 } from "@/components/ui/credenza";
 import { Input } from "@/components/ui/input";
-import { useGetDataWebsite } from "@/data/admin/data-website/website-datas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
-import { DataTableDataWebsite } from "./data-table-website";
+import { DataTableProduct } from "./data-table-product";
 import { X } from "lucide-react";
+import { DataTableFacetedFilter } from "@/components/global/table/data-table-faceted-filter";
+import { useGetProduct } from "@/data/admin/product/product-datas";
+import { deleteProduct } from "@/actions/admin/product/product";
 
-export function DataWebsiteList() {
+export function DataProductList({ categories }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [resetSignal, setResetSignal] = useState(false);
@@ -37,16 +39,19 @@ export function DataWebsiteList() {
 
   const initialFilterState = {
     title: "",
+    type_product: [],
   };
 
   const [filter, setFilter] = useState(initialFilterState);
 
   const [debouncedTitle] = useDebounce(filter.title, 1000);
+  const [debouncedTypeProduct] = useDebounce(filter.type_product, 1000);
 
-  const { data, error, isLoading, refetch } = useGetDataWebsite(
+  const { data, error, isLoading, refetch } = useGetProduct(
     {
       ...filter,
       title: debouncedTitle,
+      type_product: debouncedTypeProduct,
     },
     page,
     pageSize
@@ -56,6 +61,13 @@ export function DataWebsiteList() {
     setFilter((prevFilter) => ({
       ...prevFilter,
       title: value,
+    }));
+  };
+
+  const handleTypeProductChange = (value) => {
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      type_product: value,
     }));
   };
 
@@ -84,11 +96,11 @@ export function DataWebsiteList() {
   };
 
   const deleteMutation = useMutation({
-    mutationFn: deleteDataWebsite,
+    mutationFn: deleteProduct,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["data-website"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
       setDeleteConfirm(null);
-      toast.success("Data Website deleted successfully");
+      toast.success("Product deleted successfully");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -96,15 +108,11 @@ export function DataWebsiteList() {
   });
 
   const handleEdit = (values) => {
-    router.push("/admin/data-website/" + values + "/edit");
+    router.push("/admin/product/" + values + "/edit");
   };
 
   const handleDelete = (values) => {
     setDeleteConfirm({ id: values });
-  };
-
-  const handleView = (values) => {
-    router.push("/admin/data-website/" + values);
   };
 
   // const { data, error, isLoading, refetch } = useGetEvents(
@@ -128,6 +136,15 @@ export function DataWebsiteList() {
               value={filter.title}
               onChange={(event) => handleTitleChange(event.target.value)}
               className="h-8 w-[150px] lg:w-[250px]"
+            />
+            <DataTableFacetedFilter
+              title="Type Product"
+              options={categories}
+              value={filter.type_product}
+              onSelect={handleTypeProductChange}
+              isShow={true}
+              isCapitalized={false}
+              resetSignal={resetSignal}
             />
             {isFilterActive && (
               <Button
@@ -157,6 +174,15 @@ export function DataWebsiteList() {
                     onChange={(event) => handleTitleChange(event.target.value)}
                     className="h-8 "
                   />
+                  <DataTableFacetedFilter
+                    title="Type Product"
+                    options={categories}
+                    value={filter.type_product}
+                    onSelect={handleTypeProductChange}
+                    isShow={true}
+                    isCapitalized={false}
+                    resetSignal={resetSignal}
+                  />
                   {isFilterActive && (
                     <Button
                       variant="destructive"
@@ -178,7 +204,7 @@ export function DataWebsiteList() {
         </div>
         <div>
           <Link
-            href="/admin/data-website/create"
+            href="/admin/product/create"
             className={buttonVariants({ variant: "default" })}
           >
             Add
@@ -186,7 +212,7 @@ export function DataWebsiteList() {
         </div>
       </div>
       <>
-        <DataTableDataWebsite
+        <DataTableProduct
           data={data?.data}
           pageCount={Math.ceil((data?.total || 0) / pageSize)}
           page={page}
@@ -197,7 +223,6 @@ export function DataWebsiteList() {
           resPerPage={resPerPage}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          onView={handleView}
         />
         <ConfirmationDialog
           open={!!deleteConfirm}

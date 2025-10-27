@@ -84,3 +84,16 @@ export async function checkExistdataWebsite(id) {
     throw new Error("Failed to get Data website");
   }
 }
+
+export async function getAllTypeProduct() {
+  try {
+    const data = await db("type_products").select(
+      "*",
+      "name as label",
+      "id as value"
+    );
+    return data;
+  } catch (error) {
+    throw new Error("Failed to get Type Product");
+  }
+}
