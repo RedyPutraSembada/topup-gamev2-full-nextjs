@@ -82,3 +82,15 @@ export async function checkExistdataWebsite(id) {
     throw new Error("Failed to get Data website");
   }
 }
+
+export async function getAllProviderProduct() {
+  try {
+    const data = await db("provider_products").select(
+      "name as label",
+      "id as value"
+    );
+    return data;
+  } catch (error) {
+    throw new Error("Failed to get Provider Product");
+  }
+}

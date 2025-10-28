@@ -41,6 +41,10 @@ const data = {
           title: "Product",
           url: "/admin/product",
         },
+        {
+          title: "Product In Provider",
+          url: "/admin/product-in-provider",
+        },
       ],
     },
     {
