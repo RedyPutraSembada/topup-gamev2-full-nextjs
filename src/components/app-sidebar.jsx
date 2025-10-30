@@ -45,6 +45,10 @@ const data = {
           title: "Product In Provider",
           url: "/admin/product-in-provider",
         },
+        {
+          title: "Voucher",
+          url: "/admin/voucher",
+        },
       ],
     },
     {
