@@ -1,7 +1,19 @@
 "use client";
-import { Menu, Search, Sun, Moon } from 'lucide-react';
+import { authClient } from '@/utils/auth-client';
+import { Menu, Search } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Header() {
+  const [openMenu, setOpenMenu] = useState(false);
+  const { 
+        data: session, 
+        isPending, //loading state
+        error, //error object
+        refetch //refetch the session
+    } = authClient.useSession()
+    console.log(session?.user);
+    
+    
   return (
     <header className={`sticky top-0 z-40 bg-gray-900 border-b border-gray-800 text-white`}>
       <div className="flex items-center justify-between px-4 lg:px-8 py-4">
@@ -18,16 +30,54 @@ export default function Header() {
             />
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          {/* <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-lg hover:bg-gray-700">
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button> */}
-          <div className="flex items-center gap-2 bg-green-600 px-3 py-1.5 rounded-lg">
-            <div className="w-6 h-6 bg-green-500 rounded-full"></div>
-            <span className="text-sm font-medium">Rp125,500</span>
+        {session?.user && (
+          <div className="relative">
+            <button
+              onClick={() => setOpenMenu((prev) => !prev)}
+              className="flex items-center gap-2 bg-green-600 px-3 py-1.5 rounded-lg"
+            >
+              {
+                session?.user?.profile ? (
+                  <img
+                    src={session.user.profile}
+                    className="w-6 h-6 rounded-full object-cover"
+                    alt="profile"
+                  />
+                ) : (
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-xs font-bold uppercase">
+                    {session?.user?.name?.charAt(0) || "?"}
+                  </div>
+                )
+              }
+              <span className="text-sm font-medium">{session?.user.name}</span>
+            </button>
+
+            {openMenu && (
+              <div className="absolute right-0 mt-2 w-44 bg-gray-800 border border-gray-700 rounded-lg shadow-lg py-2 z-50">
+                
+                {/* Show Admin Menu if role admin */}
+                {session?.user?.role === "admin" && (
+                  <a
+                    href="/admin"
+                    className="block px-4 py-2 text-sm text-white hover:bg-gray-700"
+                  >
+                    Dashboard Admin
+                  </a>
+                )}
+
+                {/* Logout */}
+                <form action="/api/auth/logout" method="POST">
+                  <button
+                    type="submit"
+                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300"
+                  >
+                    Logout
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
-          <div className="w-8 h-8 bg-indigo-600 rounded-full"></div>
-        </div>
+        )}
       </div>
     </header>
   );
