@@ -33,6 +33,7 @@ const formSchema = z.object({
   type_product_id: z.string().min(1, "Type product harus dipilih"),
   kode: z.string().optional(),
   title: z.string().min(1, "Title harus diisi"),
+  slug: z.string().min(1, "Slug harus diisi"),
   description: z.string().optional(),
   best_seller: z.boolean().default(false),
   is_active: z.boolean().default(true),
@@ -95,6 +96,7 @@ export function FormEditProduct({ data, typeProducts }) {
       type_product_id: "",
       kode: "",
       title: "",
+      slug: "",
       description: "",
       best_seller: false,
       is_active: true,
@@ -106,6 +108,22 @@ export function FormEditProduct({ data, typeProducts }) {
     },
   });
 
+  const title = form.watch("title");
+
+  useEffect(() => {
+    const newSlug = slugify(title || "");
+    form.setValue("slug", newSlug);
+  }, [title, form]);
+
+  function slugify(text) {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "") // hapus karakter selain huruf/angka/space
+      .replace(/\s+/g, "-") // ganti spasi jadi "-"
+      .replace(/--+/g, "-") // hapus double "-"
+      .trim();
+  }
+
   // Load data ketika component mount
   useEffect(() => {
     if (data) {
@@ -114,6 +132,7 @@ export function FormEditProduct({ data, typeProducts }) {
         type_product_id: data.type_product_id?.toString() || "",
         kode: data.kode || "",
         title: data.title || "",
+        slug: data.slug || "",
         description: data.description || "",
         best_seller: data.best_seller === 1 || data.best_seller === true,
         is_active: data.is_active === 1 || data.is_active === true,
@@ -393,6 +412,27 @@ export function FormEditProduct({ data, typeProducts }) {
                       placeholder="Masukkan title produk..."
                       className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-500"
                       {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-300">
+                    Slug
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Slug akan otomatis diisi..."
+                      className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-500"
+                      {...field}
+                      readOnly // user tidak bisa ketik manual
                     />
                   </FormControl>
                   <FormMessage />

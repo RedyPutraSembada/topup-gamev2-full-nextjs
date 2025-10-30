@@ -1,21 +1,22 @@
 "use client";
-import { authClient } from '@/utils/auth-client';
-import { Menu, Search } from 'lucide-react';
-import { useState } from 'react';
+import { authClient } from "@/utils/auth-client";
+import { Menu, Search } from "lucide-react";
+import { useState } from "react";
 
 export default function Header() {
   const [openMenu, setOpenMenu] = useState(false);
-  const { 
-        data: session, 
-        isPending, //loading state
-        error, //error object
-        refetch //refetch the session
-    } = authClient.useSession()
-    console.log(session?.user);
-    
-    
+  const {
+    data: session,
+    isPending, //loading state
+    error, //error object
+    refetch, //refetch the session
+  } = authClient.useSession();
+  console.log(session?.user);
+
   return (
-    <header className={`sticky top-0 z-40 bg-gray-900 border-b border-gray-800 text-white`}>
+    <header
+      className={`sticky top-0 z-40 bg-gray-900 border-b border-gray-800 text-white`}
+    >
       <div className="flex items-center justify-between px-4 lg:px-8 py-4">
         <div className="flex items-center gap-4 flex-1">
           <button className="lg:hidden">
@@ -34,27 +35,24 @@ export default function Header() {
           <div className="relative">
             <button
               onClick={() => setOpenMenu((prev) => !prev)}
-              className="flex items-center gap-2 bg-green-600 px-3 py-1.5 rounded-lg"
+              className="flex items-center gap-2 bg-blue-600 px-3 py-1.5 rounded-lg"
             >
-              {
-                session?.user?.profile ? (
-                  <img
-                    src={session.user.profile}
-                    className="w-6 h-6 rounded-full object-cover"
-                    alt="profile"
-                  />
-                ) : (
-                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-xs font-bold uppercase">
-                    {session?.user?.name?.charAt(0) || "?"}
-                  </div>
-                )
-              }
+              {session?.user?.profile ? (
+                <img
+                  src={session.user.profile}
+                  className="w-6 h-6 rounded-full object-cover"
+                  alt="profile"
+                />
+              ) : (
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-xs font-bold uppercase">
+                  {session?.user?.name?.charAt(0) || "?"}
+                </div>
+              )}
               <span className="text-sm font-medium">{session?.user.name}</span>
             </button>
 
             {openMenu && (
               <div className="absolute right-0 mt-2 w-44 bg-gray-800 border border-gray-700 rounded-lg shadow-lg py-2 z-50">
-                
                 {/* Show Admin Menu if role admin */}
                 {session?.user?.role === "admin" && (
                   <a

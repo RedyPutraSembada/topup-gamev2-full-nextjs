@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -33,6 +33,7 @@ const formSchema = z.object({
   type_product_id: z.string().min(1, "Type product harus dipilih"),
   kode: z.string().optional(),
   title: z.string().min(1, "Title harus diisi"),
+  slug: z.string().min(1, "Slug harus diisi"),
   description: z.string().optional(),
   best_seller: z.boolean().default(false),
   is_active: z.boolean().default(true),
@@ -103,6 +104,7 @@ export function FormCreateProduct({ typeProducts }) {
       type_product_id: "",
       kode: "",
       title: "",
+      slug: "",
       description: "",
       best_seller: false,
       is_active: true,
@@ -113,6 +115,13 @@ export function FormCreateProduct({ typeProducts }) {
       type_data_product: "",
     },
   });
+
+  const title = form.watch("title");
+
+  useEffect(() => {
+    const newSlug = slugify(title || "");
+    form.setValue("slug", newSlug);
+  }, [title, form]);
 
   const createMutation = useMutation({
     mutationFn: createProduct,
@@ -125,6 +134,15 @@ export function FormCreateProduct({ typeProducts }) {
       toast.error(error.message);
     },
   });
+
+  function slugify(text) {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "") // hapus karakter selain huruf/angka/space
+      .replace(/\s+/g, "-") // ganti spasi jadi "-"
+      .replace(/--+/g, "-") // hapus double "-"
+      .trim();
+  }
 
   const handleImageUpload = async (e, fieldName, setPreview, setLoading) => {
     const file = e.target.files?.[0];
@@ -340,6 +358,27 @@ export function FormCreateProduct({ typeProducts }) {
                       placeholder="Masukkan title produk..."
                       className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-500"
                       {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-300">
+                    Slug
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Slug akan otomatis diisi..."
+                      className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-500"
+                      {...field}
+                      readOnly // user tidak bisa ketik manual
                     />
                   </FormControl>
                   <FormMessage />
