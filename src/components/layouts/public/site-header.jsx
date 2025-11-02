@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/utils/auth-client";
 import { Menu, Search } from "lucide-react";
 import { useState } from "react";
@@ -64,14 +65,15 @@ export default function Header() {
                 )}
 
                 {/* Logout */}
-                <form action="/api/auth/logout" method="POST">
-                  <button
-                    type="submit"
-                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300"
-                  >
-                    Logout
-                  </button>
-                </form>
+                <button
+                  onClick={() => {
+                    authClient.signOut();
+                    router.push("/sign-in");
+                  }}
+                  className="mt-1 w-full text-left px-4 py-2 text-sm font-medium bg-red-500 hover:bg-red-600 text-white rounded-md"
+                >
+                  Sign Out
+                </button>
               </div>
             )}
           </div>

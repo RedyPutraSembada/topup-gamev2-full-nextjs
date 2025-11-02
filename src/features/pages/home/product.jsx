@@ -2,6 +2,7 @@
 
 import { getProductPublic } from "@/actions/public/product/public-product";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
@@ -103,23 +104,25 @@ export default function Product({ type_product }) {
             {data.pages.map((page, pageIndex) => (
               <Fragment key={pageIndex}>
                 {page.data.map((item, itemIndex) => (
-                  <div
-                    key={`${item.id || itemIndex}`}
-                    className="group cursor-pointer"
-                  >
-                    <div className="relative aspect-3/4 rounded-xl overflow-hidden mb-2">
-                      <img
-                        src={item.image_thumbnail}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="absolute bottom-0 left-0 right-0 p-3">
-                          <p className="text-sm font-medium">{item.title}</p>
+                  <Link href={`/product/${item.slug}`}>
+                    <div
+                      key={`${item.id || itemIndex}`}
+                      className="group cursor-pointer"
+                    >
+                      <div className="relative aspect-3/4 rounded-xl overflow-hidden mb-2">
+                        <img
+                          src={item.image_thumbnail}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute bottom-0 left-0 right-0 p-3">
+                            <p className="text-sm font-medium">{item.title}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </Fragment>
             ))}

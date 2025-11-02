@@ -5,8 +5,6 @@ import { db } from "@/lib/db/knex";
 export async function getProductPublic(filter = {}, page = 1, perPage = 10) {
   try {
     // Function to build the query
-    console.log("filter", filter);
-
     const getModel = () =>
       db("products")
         .select("id", "title", "slug", "image_thumbnail")
@@ -46,5 +44,47 @@ export async function getProductPublic(filter = {}, page = 1, perPage = 10) {
   } catch (error) {
     console.log(error);
     throw new Error("Failed to fetch public ");
+  }
+}
+
+export async function getProductBySlug(slug) {
+  try {
+    const data = await db("products").whereILike("slug", slug).first();
+
+    return data;
+  } catch (error) {
+    throw new Error("Failed to get Product");
+  }
+}
+
+export async function getProductBySlugAndProductInProvider(slug) {
+  try {
+    const product = await db("products").whereILike("slug", slug).first();
+
+    const providers = await db("product_in_providers").where(
+      "product_id",
+      product.id
+    );
+
+    const data = {
+      ...product,
+      providers, // array relasi
+    };
+
+    return data;
+  } catch (error) {
+    console.log(error);
+
+    throw new Error("Failed to get Product");
+  }
+}
+
+export async function getProductInProvider(id) {
+  try {
+    const data = await db("products.*", "").whereILike("slug", slug).first();
+
+    return data;
+  } catch (error) {
+    throw new Error("Failed to get Product");
   }
 }
