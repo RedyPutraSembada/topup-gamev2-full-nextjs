@@ -14,7 +14,7 @@ import { toast } from "sonner";
 export function PublicFormProduct({ product, paymentMethod }) {
   const { data: session, isPending: loading } = authClient.useSession();
 
-  const userId = session?.user?.id || "";
+  const userIdLogin = session?.user?.id || "";
 
   const [selectedDiamond, setSelectedDiamond] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
@@ -205,10 +205,17 @@ export function PublicFormProduct({ product, paymentMethod }) {
   const createTransactionMutation = useMutation({
     mutationFn: createTransaction,
     onSuccess: (data) => {
+      if (data.success) {
+        toast.success("Transaksi berhasil dibuat", {
+          description: "Silakan lakukan pembayaran di halaman transaksi",
+        });
+      } else {
+        toast.error(data.message || "Gagal membuat transaksi");
+      }
       console.log("data", data);
-      toast.success("Transaksi berhasil dibuat", {
-        description: "Silakan lakukan pembayaran di halaman transaksi",
-      });
+      // toast.success("Transaksi berhasil dibuat", {
+      //   description: "Silakan lakukan pembayaran di halaman transaksi",
+      // });
     },
     onError: (error) => {
       console.log("error", error);
@@ -220,7 +227,7 @@ export function PublicFormProduct({ product, paymentMethod }) {
   const handleBuyNow = () => {
     // Kumpulkan semua data yang diperlukan
     const orderData = {
-      userId: userId, //->TO DATABASE "user_id"
+      userId: userIdLogin, //->TO DATABASE "user_id"
       // Data Produk
       product: {
         id: product.id,
@@ -242,7 +249,7 @@ export function PublicFormProduct({ product, paymentMethod }) {
         payment_method:
           paymentMethods.find((pm) => pm.id === selectedPayment)?.name !==
           "saldo"
-            ? "e-payment"
+            ? "saldo"
             : "saldo", //->TO DATABASE
         name: paymentMethods.find((pm) => pm.id === selectedPayment)?.name,
         image: paymentMethods.find((pm) => pm.id === selectedPayment)?.image,
@@ -289,7 +296,7 @@ export function PublicFormProduct({ product, paymentMethod }) {
 
     // Tampilkan toast untuk konfirmasi
     createTransactionMutation.mutateAsync(orderData);
-    toast.success("Data berhasil dikumpulkan! Cek console untuk detailnya.");
+    // toast.success("Data berhasil dikumpulkan! Cek console untuk detailnya.");
   };
 
   return (

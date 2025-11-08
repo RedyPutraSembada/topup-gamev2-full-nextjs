@@ -2,6 +2,9 @@
 
 import { db } from "@/lib/db/knex";
 import { generateOrderId } from "@/lib/utils";
+import * as gamepoint from "../provider/gamepoint";
+import * as moogold from "../provider/moogold";
+import * as digiflash from "../provider/digiflash";
 
 export async function createTransaction(data) {
   try {
@@ -23,6 +26,71 @@ export async function createTransaction(data) {
       is_active: 1,
       data_input_user: JSON.stringify(data),
     };
+    const values = Object.values(data.userInputs);
+    console.log("user inputs", values);
+
+    const productInProvider = await db("product_in_providers")
+      .leftJoin(
+        "provider_products as pp",
+        "product_in_providers.product_provider_id",
+        "pp.id"
+      )
+      .leftJoin("products as p", "product_in_providers.product_id", "p.id")
+      .leftJoin("type_products as tp", "p.type_product_id", "tp.id")
+      .where(
+        "product_in_providers.id",
+        data.selectedPackage.id_product_in_provider
+      )
+      .select(
+        "product_in_providers.*",
+        "pp.name as provider_name",
+        "tp.name as type_product_name"
+      )
+      .first();
+
+    // Cek saldo user jika menggunakan saldo
+    if (data.selectedPaymentMethod.payment_method === "saldo" && data.userId) {
+      const user = await db("user").where("id", data.userId).first();
+      if (Number(user.saldo) < Number(data.pricing.total)) {
+        return { success: false, message: "Saldo tidak cukup" };
+      }
+      const saldoUser = Number(user.saldo) - Number(data.pricing.total);
+
+      // Order ke provider
+      if (productInProvider.type_product_name === "Game") {
+        if (productInProvider.provider_name === "GAMEPOINT") {
+          console.log("gamepoint");
+          console.log("values1", values[0]);
+          console.log("values2", values[1]);
+          const result = await gamepoint.order(
+            orderId,
+            data.selectedPackage.product_id_from_provider,
+            values[0],
+            values[1] ?? null
+          );
+          console.log("result gamepoint", result);
+        } else if (productInProvider.provider_name === "MOOGOLD") {
+          console.log("moogold");
+          const result = await moogold.order(
+            data.selectedPackage.product_id_from_provider,
+            values[0],
+            values[1] ?? null
+          );
+          console.log("result moogold", result);
+        } else if (productInProvider.provider_name === "DIGIFLASH") {
+          console.log("digiflash");
+          const result = await digiflash.order(
+            values[0],
+            values[1] ?? null,
+            data.selectedPackage.product_id_from_provider,
+            orderId
+          );
+          console.log("result digiflash", result);
+        }
+      }
+    }
+
+    console.log("productInProvider", productInProvider);
 
     console.log("dataTransaction", dataTransaction);
 
@@ -58,6 +126,7 @@ export async function createTransaction(data) {
     // return { success: true, id };
     return { success: true, data };
   } catch (error) {
+    console.log("error", error);
     throw new Error("Failed to create Transaction");
   }
 }
