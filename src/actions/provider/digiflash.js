@@ -4,16 +4,17 @@ import crypto from "crypto";
 import axios from "axios";
 
 // Ambil dari .env
-const DIGI_USERNAME = process.env.DIGIFLASH_USERNAME;
-const DIGI_API_KEY = process.env.DIGIFLASH_SECRET_KEY;
-
+const DIGI_USERNAME = process.env.DIGIFLASH_USERNAME?.trim();
+const DIGI_SECRET_KEY = process.env.DIGIFLASH_SECRET_KEY?.trim();
 const BASE_URL = "https://api.digiflazz.com";
 
 function md5(str) {
-  return crypto.createHash("md5").update(str).digest("hex");
+  return crypto
+    .createHash("md5")
+    .update(Buffer.from(str, "utf8"))
+    .digest("hex");
 }
 
-// 🔹 CONNECT FUNCTION (mirip cURL versi JS)
 async function connect(path, data) {
   try {
     const res = await axios.post(`${BASE_URL}${path}`, data, {
@@ -26,19 +27,23 @@ async function connect(path, data) {
   }
 }
 
-// 🔹 ORDER FUNCTION
 export async function order(uid, zone, service, order_id) {
   const target = `${uid}${zone}`;
-  const sign = md5(DIGI_USERNAME + DIGI_API_KEY + String(order_id));
+  const plain = `${DIGI_USERNAME}${DIGI_SECRET_KEY}${order_id}`;
+  const sign = md5(plain);
+
+  console.log("Sign plain:", plain);
+  console.log("Sign md5:", sign);
 
   const body = {
     username: DIGI_USERNAME,
     buyer_sku_code: service,
     customer_no: target,
-    ref_id: String(order_id),
+    ref_id: order_id,
     sign,
   };
 
+  console.log("Body:", body);
   return connect("/v1/transaction", body);
 }
 

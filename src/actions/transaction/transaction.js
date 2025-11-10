@@ -68,6 +68,12 @@ export async function createTransaction(data) {
             values[0],
             values[1] ?? null
           );
+          if (result.status === false) {
+            return {
+              success: false,
+              message: "Failed to create Transaction Error Provider",
+            };
+          }
           console.log("result gamepoint", result);
         } else if (productInProvider.provider_name === "MOOGOLD") {
           console.log("moogold");
@@ -86,6 +92,12 @@ export async function createTransaction(data) {
             orderId
           );
           console.log("result digiflash", result);
+          if (result.status === false) {
+            return {
+              success: false,
+              message: "Failed to create Transaction Error Provider",
+            };
+          }
         }
       }
     }
