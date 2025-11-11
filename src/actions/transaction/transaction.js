@@ -5,6 +5,7 @@ import { generateOrderId } from "@/lib/utils";
 import * as gamepoint from "../provider/gamepoint";
 import * as moogold from "../provider/moogold";
 import * as digiflash from "../provider/digiflash";
+import { success } from "zod";
 
 export async function createTransaction(data) {
   try {
@@ -14,10 +15,10 @@ export async function createTransaction(data) {
     const dataTransaction = {
       user_id: data.userId,
       product_in_provider_id: data.selectedPackage.id_product_in_provider,
-      date: new Date().toISOString(),
+      date: db.fn.now(),
       metode: data.selectedPaymentMethod.payment_method,
       payment_progress: "Processing",
-      order_id: orderId, // -> harus di buat sendiri
+      order_id: orderId,
       price: data.pricing.base_price,
       using_member: data.using_member ?? null,
       total_amount: data.pricing.total,
@@ -25,7 +26,12 @@ export async function createTransaction(data) {
       voucher: data.voucher ? data.voucher.voucher : null,
       is_active: 1,
       data_input_user: JSON.stringify(data),
+      created_at: db.fn.now(),
+      updated_at: db.fn.now(),
     };
+
+    await db("transactions").insert(dataTransaction);
+
     const values = Object.values(data.userInputs);
     console.log("user inputs", values);
 
@@ -48,97 +54,127 @@ export async function createTransaction(data) {
       )
       .first();
 
-    // Cek saldo user jika menggunakan saldo
+    // ✅ Cek saldo user jika menggunakan saldo
     if (data.selectedPaymentMethod.payment_method === "saldo" && data.userId) {
       const user = await db("user").where("id", data.userId).first();
       if (Number(user.saldo) < Number(data.pricing.total)) {
         return { success: false, message: "Saldo tidak cukup" };
       }
+
       const saldoUser = Number(user.saldo) - Number(data.pricing.total);
 
-      // Order ke provider
+      // ✅ Order ke provider
       if (productInProvider.type_product_name === "Game") {
-        if (productInProvider.provider_name === "GAMEPOINT") {
-          console.log("gamepoint");
-          console.log("values1", values[0]);
-          console.log("values2", values[1]);
-          const result = await gamepoint.order(
-            orderId,
-            data.selectedPackage.product_id_from_provider,
-            values[0],
-            values[1] ?? null
-          );
-          if (result.status === false) {
-            return {
-              success: false,
-              message: "Failed to create Transaction Error Provider",
-            };
+        const response = await TransactionForProvider(productInProvider, values, data, orderId);
+        console.log("response", response);
+
+        if (response.success === true) {
+          // ✅ Update saldo user
+          try {
+            await db("user")
+              .where("id", data.userId)
+              .update({ saldo: saldoUser });
+          } catch (e) {
+            console.error("Gagal update saldo:", e);
           }
-          console.log("result gamepoint", result);
-        } else if (productInProvider.provider_name === "MOOGOLD") {
-          console.log("moogold");
-          const result = await moogold.order(
-            data.selectedPackage.product_id_from_provider,
-            values[0],
-            values[1] ?? null
-          );
-          console.log("result moogold", result);
-        } else if (productInProvider.provider_name === "DIGIFLASH") {
-          console.log("digiflash");
-          const result = await digiflash.order(
-            values[0],
-            values[1] ?? null,
-            data.selectedPackage.product_id_from_provider,
-            orderId
-          );
-          console.log("result digiflash", result);
-          if (result.status === false) {
-            return {
-              success: false,
-              message: "Failed to create Transaction Error Provider",
-            };
+
+          // ✅ Update voucher jika ada
+          try {
+            if (dataTransaction.voucher_id) {
+              await db("vouchers")
+                .where("id", dataTransaction.voucher_id)
+                .update({ total_use: db.raw("COALESCE(total_use, 0) + 1") });
+            }
+          } catch (e) {
+            console.error("Gagal update voucher:", e);
           }
+
+          // ✅ Update transaksi jadi sukses
+          await db("transactions")
+            .where("order_id", orderId)
+            .update({
+              payment_progress: "Success",
+              updated_at: db.fn.now(),
+            });
+
+          return {
+            success: true,
+            message: "Transaksi Berhasil",
+            order_id: orderId,
+          };
+        } else {
+          return {
+            success: false,
+            message: "Gagal Transaksi ke Provider",
+            order_id: null,
+          };
         }
       }
     }
 
-    console.log("productInProvider", productInProvider);
-
-    console.log("dataTransaction", dataTransaction);
-
-    // kalo using member dan methodnya saldo maka di buat sendiri transaksinya dan sukses
-
-    // kalo using member dan e payment maka buat transaksinya dulu dan ambil data dari duitku
-
-    // kalo user biasa dan e payment maka buat transaksinya dulu dan ambil data dari duitku
-
-    // const [id] = await db("transactions").insert({
-    //   user_id: data.user_id,
-    //   product_in_provider_id: data.product_in_provider_id,
-    //   date: data.date,
-    //   metode: data.metode,
-    //   payment_progress: data.payment_progress,
-    //   order_id: data.order_id,
-    //   price: data.price,
-    //   va_number: data.va_number,
-    //   using_member: data.using_member,
-    //   fee_pg: data.fee_pg,
-    //   total_amount: data.total_amount,
-    //   voucher_id: data.voucher_id,
-    //   voucher: data.voucher,
-    //   is_active: data.is_active,
-    //   created_at: data.created_at,
-    //   updated_at: data.updated_at,
-    //   pg_order_id: data.pg_order_id,
-    //   provider_order_id: data.provider_order_id,
-    //   qr_string: data.qr_string,
-    //   url_payment: data.url_payment,
-    //   data_input_user: data.data_input_user,
-    // });
-    // return { success: true, id };
     return { success: true, data };
   } catch (error) {
     console.log("error", error);
     throw new Error("Failed to create Transaction");
+  }
+}
+
+
+async function TransactionForProvider(productInProvider, values, data, orderId) {
+  if (productInProvider.provider_name === "GAMEPOINT") {
+    const result = await gamepoint.order(
+      orderId,
+      data.selectedPackage.product_id_from_provider,
+      values[0],
+      values[1] ?? null
+    );
+
+    if (result.status === false) {
+      return {
+        success: false,
+        message: "Failed to create Transaction Error Provider",
+        data: null
+      };
+    }
+
+  } else if (productInProvider.provider_name === "MOOGOLD") {
+    const result = await moogold.order(
+      data.selectedPackage.product_id_from_provider,
+      values[0],
+      values[1] ?? null
+    );
+
+  } else if (productInProvider.provider_name === "DIGIFLASH") {
+    const result = await digiflash.order(
+      values[0],
+      values[1] ?? null,
+      data.selectedPackage.product_id_from_provider,
+      orderId
+    );
+
+    if (result.data.status === "Pending" || result.data.status === "Sukses") {
+      return {
+        success: true,
+        message: "Success Transaction Provider",
+        data: result.data
+      };
+    } else {
+      return {
+        success: false,
+        message: "Failed to create Transaction Error Provider",
+        data: null
+      };
+    }
+  }
+}
+
+
+export async function getTransactionByOrderID(order_id) {
+  try {
+    const data = await db("transactions").whereILike("order_id", order_id).first();
+
+    return data;
+  } catch (error) {
+    throw new Error("Failed to get Transaction");
   }
 }

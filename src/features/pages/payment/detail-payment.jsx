@@ -1,45 +1,47 @@
-"use client";
-import { useState } from 'react';
+"use client"
+
+import { useState } from "react";
 import { CheckCircle, Download, Copy, Check, Home, Receipt } from 'lucide-react';
 
-export default function PaymentPage() {
-  const [darkMode] = useState(true);
-  const [copied, setCopied] = useState(false);
+export default function DetailPayment({detailTransaction}) {
+    console.log("detailTransaction", detailTransaction);
+    
+    
+    const [darkMode] = useState(true);
+    const [copied, setCopied] = useState(false);
 
-  // Dummy data dari transaksi sebelumnya
-  const transactionData = {
-    orderId: 'INV-2025-10234567',
-    date: '23 Oktober 2025, 14:30 WIB',
-    game: {
-      name: 'Mobile Legends: Bang Bang',
-      image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=200&h=200&fit=crop'
-    },
-    diamond: {
-      amount: '1000 Diamonds',
-      bonus: '+80',
-      price: 'Rp 265.000'
-    },
-    account: {
-      userId: '12345678',
-      serverId: '9012',
-      username: 'ProPlayer123'
-    },
-    payment: {
-      method: 'GoPay',
-      total: 'Rp 266.000',
-      adminFee: 'Rp 1.000'
-    },
-    status: 'success'
-  };
+    // Dummy data dari transaksi sebelumnya
+    const transactionData = {
+        orderId: 'INV-2025-10234567',
+        date: '23 Oktober 2025, 14:30 WIB',
+        game: {
+        name: 'Mobile Legends: Bang Bang',
+        image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=200&h=200&fit=crop'
+        },
+        diamond: {
+        amount: '1000 Diamonds',
+        bonus: '+80',
+        price: 'Rp 265.000'
+        },
+        account: {
+        userId: '12345678',
+        serverId: '9012',
+        username: 'ProPlayer123'
+        },
+        payment: {
+        method: 'GoPay',
+        total: 'Rp 266.000',
+        adminFee: 'Rp 1.000'
+        },
+        status: 'success'
+    };
 
-  const handleCopyOrderId = () => {
-    navigator.clipboard.writeText(transactionData.orderId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} py-8`}>
+    const handleCopyOrderId = () => {
+        navigator.clipboard.writeText(transactionData.orderId);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+    return (
       <div className="max-w-4xl mx-auto px-4">
         {/* Success Icon & Message */}
         <div className="text-center mb-8">
@@ -51,7 +53,7 @@ export default function PaymentPage() {
         </div>
 
         {/* Order ID Card */}
-        <div className={`rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} p-6 mb-6`}>
+        <div className={`rounded-2xl bg-gray-800 p-6 mb-6`}>
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-sm text-gray-400 mb-1">Nomor Pesanan</p>
@@ -59,9 +61,7 @@ export default function PaymentPage() {
             </div>
             <button
               onClick={handleCopyOrderId}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-                darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'
-              } transition-colors`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors`}
             >
               {copied ? (
                 <>
@@ -83,7 +83,7 @@ export default function PaymentPage() {
           {/* Left Section - Transaction Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Game & Product Info */}
-            <div className={`rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} p-6`}>
+            <div className={`rounded-2xl bg-gray-800 p-6`}>
               <h2 className="text-lg font-bold mb-4">Detail Produk</h2>
               <div className="flex gap-4">
                 <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
@@ -113,7 +113,7 @@ export default function PaymentPage() {
             </div>
 
             {/* Account Info */}
-            <div className={`rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} p-6`}>
+            <div className={`rounded-2xl bg-gray-800 p-6`}>
               <h2 className="text-lg font-bold mb-4">Informasi Akun</h2>
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2">
@@ -132,7 +132,7 @@ export default function PaymentPage() {
             </div>
 
             {/* Payment Info */}
-            <div className={`rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} p-6`}>
+            <div className={`rounded-2xl bg-gray-800 p-6`}>
               <h2 className="text-lg font-bold mb-4">Informasi Pembayaran</h2>
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2">
@@ -157,7 +157,7 @@ export default function PaymentPage() {
 
           {/* Right Section - Action Buttons */}
           <div className="lg:col-span-1">
-            <div className={`rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} p-6 sticky top-24 space-y-4`}>
+            <div className={`rounded-2xl bg-gray-800 p-6 sticky top-24 space-y-4`}>
               <h2 className="text-lg font-bold mb-4">Aksi Cepat</h2>
 
               {/* Download Invoice */}
@@ -179,7 +179,7 @@ export default function PaymentPage() {
               </button>
 
               {/* Status Info */}
-              <div className={`mt-6 p-4 rounded-xl ${darkMode ? 'bg-green-900/20 border border-green-800' : 'bg-green-50 border border-green-200'}`}>
+              <div className={`mt-6 p-4 rounded-xl bg-green-900/20 border border-green-800`}>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
                   <div>
@@ -203,7 +203,7 @@ export default function PaymentPage() {
         </div>
 
         {/* Bottom Notice */}
-        <div className={`mt-8 rounded-2xl ${darkMode ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'} p-6`}>
+        <div className={`mt-8 rounded-2xl bg-blue-900/20 border border-blue-800 p-6`}>
           <h3 className="font-bold mb-2 text-blue-400">Catatan Penting</h3>
           <ul className="space-y-2 text-sm text-blue-300">
             <li>• Diamond akan otomatis masuk ke akun game Anda dalam 1-5 menit</li>
@@ -213,6 +213,5 @@ export default function PaymentPage() {
           </ul>
         </div>
       </div>
-    </div>
-  );
+    )
 }

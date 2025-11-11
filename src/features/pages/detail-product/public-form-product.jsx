@@ -8,11 +8,13 @@ import { authClient } from "@/utils/auth-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Info, X, CheckCircle } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export function PublicFormProduct({ product, paymentMethod }) {
   const { data: session, isPending: loading } = authClient.useSession();
+  const router = useRouter()
 
   const userIdLogin = session?.user?.id || "";
 
@@ -206,13 +208,11 @@ export function PublicFormProduct({ product, paymentMethod }) {
     mutationFn: createTransaction,
     onSuccess: (data) => {
       if (data.success) {
-        toast.success("Transaksi berhasil dibuat", {
-          description: "Silakan lakukan pembayaran di halaman transaksi",
-        });
+        toast.success(data.message);
+        router.push(`/payment/${data.order_id}`)
       } else {
         toast.error(data.message || "Gagal membuat transaksi");
       }
-      console.log("data", data);
       // toast.success("Transaksi berhasil dibuat", {
       //   description: "Silakan lakukan pembayaran di halaman transaksi",
       // });
