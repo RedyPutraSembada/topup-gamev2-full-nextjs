@@ -24,16 +24,19 @@ function generateAuthSignature(payload, timestamp, path, secret) {
   return crypto.createHmac("sha256", secret).update(stringToSign).digest("hex");
 }
 
-export async function order(product, id, zone) {
+export async function order(product_id_from_provider, id, zone) {
   const url = "https://moogold.com/wp-json/v1/api/order/create_order";
   const timestamp = Math.floor(Date.now() / 1000);
+
+  const [category, product, qty] = product_id_from_provider.split(",");
+
 
   const payload = JSON.stringify({
     path: "order/create_order",
     data: {
-      category: "2362359",
+      category: category,
       "product-id": product,
-      quantity: 1,
+      quantity: qty,
       "User ID": id,
       "Server ID": zone,
     },

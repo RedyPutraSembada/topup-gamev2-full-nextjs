@@ -403,6 +403,7 @@ export function FormEditProductInProvider({
                   <FormLabel className="text-sm font-medium text-gray-300">
                     Product ID From Provider{" "}
                     <span className="text-gray-500">(Opsional)</span>
+                    <span className="text-gray-500">Jika M#####d maka isi (categoryid,kodeproduct,qty)</span>
                   </FormLabel>
                   <FormControl>
                     <Input
