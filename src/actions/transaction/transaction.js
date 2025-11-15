@@ -775,7 +775,20 @@ async function TransactionForProvider(productInProvider, values, data, orderId) 
 
 export async function getTransactionByOrderID(order_id) {
   try {
-    const data = await db("transactions").whereILike("order_id", order_id).first();
+    const data = await db("transactions")
+      .leftJoin("product_in_providers", "transactions.product_in_provider_id", "product_in_providers.id")
+      .leftJoin("products", "product_in_providers.product_id", "products.id")
+      .select(
+        "transactions.*",
+        "product_in_providers.name as product_in_provider_name",
+        "product_in_providers.amount_seller as amount_seller",
+        "product_in_providers.amount_member as amount_member",
+        "products.title as product_name",
+        "products.image_thumbnail as product_image",
+        "products.data_input as data_input_product"
+      )
+      .whereILike("order_id", order_id)
+      .first();
 
     return data;
   } catch (error) {
