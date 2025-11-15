@@ -5,6 +5,7 @@ import { generateOrderId } from "@/lib/utils";
 import * as gamepoint from "../provider/gamepoint";
 import * as moogold from "../provider/moogold";
 import * as digiflash from "../provider/digiflash";
+import * as duitku from "../payment-getaway/duitku"
 import { success } from "zod";
 
   // export async function createTransaction(data) {
@@ -526,13 +527,59 @@ export async function createTransaction(data) {
       }
     } else {
       // Metode pembayaran lain (misalnya payment gateway)
-      // Transaksi dibuat dengan status Processing, menunggu callback payment
-      await trx.commit();
-      return { 
-        success: true, 
-        message: "Transaksi menunggu pembayaran",
-        order_id: orderId 
-      };
+      try {
+        const responseDuitku = await duitku.requestInquiry(
+          10000, 
+          data.selectedPaymentMethod.id, 
+          process.env.PHONE_NUMBER, 
+          process.env.EMAIL
+        );
+
+        console.log("responseDuitku", responseDuitku);
+
+        // Pastikan response valid
+        if (!responseDuitku || !responseDuitku.reference) {
+          await trx.rollback();
+          return { 
+            success: false, 
+            message: "Gagal membuat pembayaran, silakan coba lagi" 
+          };
+        }
+
+        // Update transaction dengan data dari Duitku
+        await trx("transactions")
+            .where("order_id", orderId)
+            .update({
+              pg_order_id: responseDuitku.reference,
+              url_payment: responseDuitku.paymentUrl,
+              va_number: responseDuitku.vaNumber || null,
+              qr_string: responseDuitku.qrString || null,
+              payment_progress: "pending",
+              updated_at: trx.fn.now(),
+            });
+
+        // Transaksi dibuat dengan status pending, menunggu callback payment
+        await trx.commit();
+        
+        return { 
+          success: true, 
+          message: "Transaksi berhasil dibuat, silakan lakukan pembayaran",
+          order_id: orderId,
+          payment_url: responseDuitku.paymentUrl,
+          va_number: responseDuitku.vaNumber,
+          qr_string: responseDuitku.qrString,
+          reference: responseDuitku.reference,
+        };
+
+      } catch (error) {
+        console.error("Duitku Error:", error);
+        await trx.rollback();
+        
+        return { 
+          success: false, 
+          message: error.message || "Gagal membuat pembayaran",
+        };
+      }
     }
 
   } catch (error) {
@@ -662,6 +709,9 @@ async function TransactionForProvider(productInProvider, values, data, orderId) 
       values[0],
       values[1] ?? null
     );
+
+    console.log("gamepoint result", result);
+    
 
     if (result.status === false) {
       return {

@@ -42,34 +42,50 @@ export async function getPaymentMethod() {
   }
 }
 
-async function requestInquiry(amount, method, phone, email) {
-  const timestamp = Math.floor(Date.now() / 1000).toString();
-  const merchantOrderId = timestamp + process.env.DUITKU_MERCHANT_CODE;
+export async function requestInquiry(amount, method, phone, email) {
+  const merchantCode = process.env.DUITKU_MERCHANT_CODE;
+  const apiKey = process.env.DUITKU_API_KEY;
   const inquiryUrl = process.env.DUITKU_INQUIRY_URL;
+  
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const merchantOrderId = timestamp + merchantCode;
 
-  const raw =
-    process.env.DUITKU_MERCHANT_CODE +
-    merchantOrderId +
-    parseInt(amount) +
-    process.env.DUITKU_API_KEY;
+  // ✅ Format signature: merchantCode + merchantOrderId + amount + apiKey
+  const raw = merchantCode + merchantOrderId + parseInt(amount) + apiKey;
   const signature = crypto.createHash("md5").update(raw).digest("hex");
 
   const payload = {
-    merchantCode: process.env.DUITKU_MERCHANT_CODE,
-    paymentAmount: amount,
+    merchantCode: merchantCode,  // ⚠️ Perhatikan: PascalCase
+    paymentAmount: parseInt(amount),  // ✅ Pastikan tipe number
     paymentMethod: method,
     phoneNumber: phone,
+    customerVaName : 'John Doe',
     email: email,
-    merchantOrderId,
-    customerVaName: process.env.APP_NAME,
-    returnUrl: "https://goxpay.id/payment",
-    signature,
+    merchantOrderId: merchantOrderId,
+    customerVaName: process.env.APP_NAME || "GOXPAY",
+    returnUrl: "https://unintermingled-noncoincident-chandler.ngrok-free.app/payment",
+    signature: signature,
     expiryPeriod: 3600,
   };
 
-  const response = await axios.post(inquiryUrl, payload, {
-    timeout: 10000,
-  });
+  try {
+    const response = await axios.post(inquiryUrl, payload, {
+      headers: { "Content-Type": "application/json" },
+      timeout: 10000,
+    });
 
-  return response.data;
+    return response.data;
+  } catch (err) {
+    // ✅ Log detail error untuk debugging
+    console.error("Duitku Inquiry Error:", {
+      status: err.response?.status,
+      data: err.response?.data,
+      payload: payload, // Debugging - hapus di production
+    });
+    
+    throw new Error(
+      err.response?.data?.Message || 
+      "Failed to create payment inquiry"
+    );
+  }
 }
