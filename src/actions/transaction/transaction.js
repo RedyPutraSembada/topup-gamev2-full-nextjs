@@ -719,6 +719,13 @@ async function TransactionForProvider(productInProvider, values, data, orderId) 
         message: "Failed to create Transaction Error Provider",
         data: null
       };
+    } else {
+      return {
+        success: true,
+        message: "Success Transaction Provider",
+        data: result,
+        provider_order_id: result.transactionId
+      };
     }
 
   } else if (productInProvider.provider_name === "MOOGOLD") {
@@ -793,5 +800,169 @@ export async function getTransactionByOrderID(order_id) {
     return data;
   } catch (error) {
     throw new Error("Failed to get Transaction");
+  }
+}
+
+export async function getTransactionByReference(reference) {
+  try {
+    const data = await db("transactions")
+      .leftJoin("product_in_providers", "transactions.product_in_provider_id", "product_in_providers.id")
+      .leftJoin("products", "product_in_providers.product_id", "products.id")
+      .select(
+        "transactions.*",
+        "product_in_providers.name as product_in_provider_name",
+        "product_in_providers.amount_seller as amount_seller",
+        "product_in_providers.amount_member as amount_member",
+        "products.title as product_name",
+        "products.image_thumbnail as product_image",
+        "products.data_input as data_input_product"
+      )
+      .whereILike("pg_order_id", reference)
+      .first();
+
+    return data;
+  } catch (error) {
+    throw new Error("Failed to get Transaction");
+  }
+}
+
+export async function callbackPayment(data) {
+  // 1. Inisialisasi Transaction Object (MANDATORY untuk atomic operations)
+  // Pastikan Anda memiliki akses ke instance Knex/DB di sini (asumsi variable 'db' tersedia)
+  const trx = await db.transaction();
+
+  try {
+    // Cari transaksi menggunakan TRX
+    const transaction = await trx('transactions')
+      .leftJoin("product_in_providers", "transactions.product_in_provider_id", "product_in_providers.id")
+      .leftJoin("provider_products", "product_in_providers.product_provider_id", "provider_products.id")
+      .select(
+        "transactions.*",
+        "provider_products.name as provider_name"
+      )
+      .where('pg_order_id', data.reference)
+      .first();
+    
+    // **Data PG Callback (untuk dimasukkan ke metadata_pg)**
+    const metadataPg = JSON.stringify(data);
+
+    if (!transaction) {
+      // Rollback jika transaksi tidak ditemukan
+      await trx.rollback(); 
+      return {
+        success: false,
+        message: "transaction not found",
+      }
+    }
+    
+    // Transaksi Ditemukan
+    if (data.resultCode === '00') {
+      // Pembayaran Berhasil
+      const userData = JSON.parse(transaction.data_input_user);
+      const values = Object.values(userData.userInputs);
+      const orderId = transaction.order_id
+
+      // ⚠️ Asumsi fungsi ini ada dan async
+      const response = await TransactionForProvider(
+        transaction, 
+        values, 
+        userData, 
+        orderId
+      );
+      
+      console.log("response", response);
+
+      if (response.success === true) {
+        
+        // ========================================
+        // 6. UPDATE SEMUA RESOURCE (Atomic Operations)
+        // ========================================
+
+        // ✅ UPDATE VOUCHER dengan atomic increment + WHERE condition
+        if (transaction.voucher_id) {
+          const voucherUpdated = await trx("vouchers") // 👈 Menggunakan TRX
+            .where("id", transaction.voucher_id)
+            .whereRaw("CAST(total_use AS UNSIGNED) < CAST(kuota AS UNSIGNED)") 
+            .update({
+              total_use: trx.raw("CAST(CAST(total_use AS UNSIGNED) + 1 AS CHAR)"),
+              updated_at: trx.fn.now()
+            });
+
+          if (voucherUpdated === 0) {
+            await trx.rollback();
+            return { 
+              success: false, 
+              message: "Voucher sudah mencapai batas penggunaan" 
+            };
+          }
+        }
+
+        // ✅ UPDATE STATUS TRANSAKSI jadi Success + Masukkan metadata_pg
+        await trx("transactions") // 👈 Menggunakan TRX
+          .where("order_id", orderId)
+          .update({
+            payment_progress: "Success",
+            provider_order_id: response.provider_order_id,
+            metadata_pg: metadataPg, // 👈 PENAMBAHAN metadata_pg
+            updated_at: trx.fn.now(),
+          });
+
+        // ========================================
+        // 7. COMMIT TRANSACTION (Simpan semua perubahan)
+        // ========================================
+        await trx.commit();
+
+        return {
+          success: true,
+          message: "Transaksi Berhasil",
+          order_id: orderId,
+        };
+
+      } else {
+        // ✅ PROVIDER GAGAL - Update transaksi jadi Failed dan Masukkan metadata_pg
+        await trx("transactions") // 👈 Menggunakan TRX
+          .where("order_id", orderId)
+          .update({
+            payment_progress: "Failed",
+            provider_order_id: response.provider_order_id,
+            metadata_pg: metadataPg, // 👈 PENAMBAHAN metadata_pg
+            updated_at: trx.fn.now(),
+          });
+
+        // Commit transaksi (untuk record history) tapi status Failed
+        await trx.commit();
+
+        return {
+          success: false,
+          message: response.message || "Gagal Transaksi ke Provider",
+          order_id: orderId,
+        };
+      }
+    } else {
+      // Pembayaran Gagal (resultCode != '00')
+      // Update status transaksi jadi Failed dan Masukkan metadata_pg
+      await trx('transactions') // 👈 Menggunakan TRX
+        .where('pg_order_id', data.reference)
+        .update({
+          payment_progress : "Failed",
+          metadata_pg: metadataPg, // 👈 PENAMBAHAN metadata_pg
+          updated_at: trx.fn.now(),
+        })
+
+      // Commit transaksi
+      await trx.commit();
+      
+      return {
+        success: false,
+        message: "Transaction Failed",
+      }
+    }
+
+  } catch (error) {
+    // Jika ada error di tengah proses, pastikan semua di-rollback
+    await trx.rollback(); 
+    console.error("Callback Transaction Error:", error);
+    // Melemparkan Error baru agar ditangkap oleh handler di route
+    throw new Error("Failed to process transaction callback");
   }
 }

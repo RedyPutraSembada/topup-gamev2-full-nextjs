@@ -5,11 +5,10 @@ const nextConfig = {
   reactCompiler: true,
   images: {
     remotePatterns: [
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "4009",
-        pathname: "/public/**",
+     {
+        protocol: 'http',
+        hostname: 'localhost',
+        pathname: '/**',
       },
     ],
   },

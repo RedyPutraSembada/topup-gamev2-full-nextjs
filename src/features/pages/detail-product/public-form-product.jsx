@@ -13,6 +13,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export function PublicFormProduct({ product, paymentMethod }) {
+  console.log("product", product);
+  
   const { data: session, isPending: loading } = authClient.useSession();
   const router = useRouter()
 
@@ -347,36 +349,57 @@ export function PublicFormProduct({ product, paymentMethod }) {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {grouped[t.name].map((pkg) => (
                     <button
-                      key={pkg.product_id_from_provider}
-                      onClick={() => {
-                        setSelectedDiamond(pkg.product_id_from_provider);
-                        // Reset voucher jika ganti paket
-                        if (voucherData) {
-                          handleRemoveVoucher();
-                        }
-                      }}
-                      className={`relative p-4 rounded-xl border-2 transition-all ${
-                        selectedDiamond === pkg.product_id_from_provider
-                          ? "border-indigo-600 bg-indigo-600/10"
-                          : "border-gray-700 hover:border-gray-600"
-                      }`}
+                        key={pkg.product_id_from_provider}
+                        onClick={() => {
+                            setSelectedDiamond(pkg.product_id_from_provider);
+                            if (voucherData) {
+                                handleRemoveVoucher();
+                            }
+                        }}
+                        // MENGURANGI PADDING: p-4 -> p-3
+                        className={`relative p-3 rounded-xl border-2 transition-all flex flex-col items-center text-center 
+                            ${selectedDiamond === pkg.product_id_from_provider
+                                ? "border-indigo-600 bg-indigo-600/10"
+                                : "border-gray-700 hover:border-gray-600"
+                            }`}
                     >
-                      {selectedDiamond === pkg.product_id_from_provider && (
-                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center">
-                          <Check className="w-4 h-4" />
-                        </div>
-                      )}
+                        {/* Check icon tetap di sini jika terpilih */}
+                        {selectedDiamond === pkg.product_id_from_provider && (
+                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-white">
+                                <Check className="w-4 h-4" /> 
+                            </div>
+                        )}
 
-                      <div className="text-left">
-                        <p className="font-bold text-sm md:text-base">
-                          {pkg.name}
-                        </p>
-                        <p className="text-indigo-400 font-semibold mt-2 text-sm md:text-base">
-                          {formatRupiah(pkg.amount_seller)}
-                        </p>
-                      </div>
+                        {/* Konten Utama */}
+                        <div className="flex flex-col items-center justify-center w-full">
+                            
+                            {/* 1. Ikon Produk */}
+                            {pkg.product_icon && (
+                                <div className="mb-1">
+                                    <img
+                                        src={pkg.product_icon}
+                                        alt={`Ikon ${pkg.name}`}
+                                        // MENGURANGI UKURAN IKON: w-12 h-12 -> w-10 h-10
+                                        className="w-10 h-10 object-contain" 
+                                    />
+                                </div>
+                            )}
+                            
+                            {/* 2. Nama Produk */}
+                            <p 
+                                // MENGURANGI UKURAN FONT & KETEBALAN: text-lg font-extrabold -> text-sm font-semibold
+                                className="font-semibold text-sm text-gray-50 uppercase mt-1 mb-1 leading-tight"
+                            >
+                                {pkg.name}
+                            </p>
+                            
+                            {/* 3. Harga */}
+                            <p className="text-indigo-400 font-bold text-sm">
+                                {formatRupiah(pkg.amount_seller)}
+                            </p>
+                        </div>
                     </button>
-                  ))}
+                ))}
                 </div>
               </div>
             ))}
