@@ -18,7 +18,6 @@ export default function Sidebar() {
 
         <nav className="space-y-1">
           <div className="text-xs font-semibold text-gray-500 mb-2 px-3">MENU</div>
-            {/* HOME */}
             <a
               href="/"
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg
@@ -28,8 +27,6 @@ export default function Sidebar() {
               <Home className="w-4 h-4" />
               <span className="text-sm">Home</span>
             </a>
-
-            {/* SEMUA GAMES */}
             <a
               href="/all-product"
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg
@@ -39,8 +36,6 @@ export default function Sidebar() {
               <Gamepad2 className="w-4 h-4" />
               <span className="text-sm">Semua games</span>
             </a>
-
-            {/* CEK TRANSAKSI */}
             <a
               href="/all-transaction"
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg
