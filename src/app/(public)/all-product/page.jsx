@@ -1,95 +1,164 @@
 "use client";
-import { useState } from 'react';
-import { Search, Filter, Grid3x3, List, ChevronDown } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, Filter, Grid3x3, List, ChevronDown, Loader2 } from 'lucide-react';
+import { useGetDataAllProduct } from '@/data/public/all-product/all-product-datas';
+import Link from 'next/link';
+import Image from 'next/image';
+
+// Mock hook untuk demo - ganti dengan hook asli Anda
+// const useGetDataAllProduct = () => {
+//   // Simulasi data dari API
+//   const mockData = {
+//     data: [
+//       {
+//         id: 1,
+//         title: "Mobile Legend",
+//         slug: "mobile-legend",
+//         category_name: "Game",
+//         image_thumbnail: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=300&h=400&fit=crop",
+//         image_cover: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=300&h=400&fit=crop",
+//         description: "Beli Top Up Diamond MLBB Termurah",
+//         best_seller: 1,
+//         is_active: 1,
+//         type_product_id: 1
+//       },
+//       {
+//         id: 2,
+//         title: "Netflix",
+//         slug: "netflix",
+//         category_name: "Account Premium",
+//         image_thumbnail: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=300&h=400&fit=crop",
+//         image_cover: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=300&h=400&fit=crop",
+//         description: "Description Netflix",
+//         best_seller: 0,
+//         is_active: 1,
+//         type_product_id: 2
+//       },
+//       {
+//         id: 3,
+//         title: "Free Fire",
+//         slug: "free-fire",
+//         category_name: "Game",
+//         image_thumbnail: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=300&h=400&fit=crop",
+//         image_cover: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=300&h=400&fit=crop",
+//         description: "Deskripsi Free Fire",
+//         best_seller: 0,
+//         is_active: 1,
+//         type_product_id: 1
+//       }
+//     ]
+//   };
+  
+//   return {
+//     data: mockData,
+//     error: null,
+//     isLoading: false,
+//     refetch: () => {}
+//   };
+// };
 
 export default function AllProductsPage() {
   const [darkMode] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [viewMode, setViewMode] = useState('grid'); // grid or list
+  const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
+  
+  const { data, error, isLoading, refetch } = useGetDataAllProduct();
 
-  const categories = [
-    { id: 'all', name: 'Semua Game', count: 120, icon: '🎮' },
-    { id: 'moba', name: 'MOBA', count: 15, icon: '⚔️' },
-    { id: 'battle-royale', name: 'Battle Royale', count: 12, icon: '🔫' },
-    { id: 'rpg', name: 'RPG', count: 25, icon: '🗡️' },
-    { id: 'card', name: 'Card Game', count: 8, icon: '🃏' },
-    { id: 'sports', name: 'Sports', count: 10, icon: '⚽' },
-    { id: 'racing', name: 'Racing', count: 7, icon: '🏎️' },
-    { id: 'casual', name: 'Casual', count: 18, icon: '🎲' },
-    { id: 'strategy', name: 'Strategy', count: 14, icon: '♟️' },
-    { id: 'voucher', name: 'Voucher & Wallet', count: 11, icon: '💰' },
-  ];
-
-  const products = {
-    moba: [
-      { id: 1, name: 'Mobile Legends', image: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=300&h=400&fit=crop', category: 'moba', price: 'Mulai Rp 15.000', popular: true },
-      { id: 2, name: 'League of Legends: Wild Rift', image: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=300&h=400&fit=crop', category: 'moba', price: 'Mulai Rp 20.000' },
-      { id: 3, name: 'Arena of Valor', image: 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=300&h=400&fit=crop', category: 'moba', price: 'Mulai Rp 18.000' },
-      { id: 4, name: 'Honor of Kings', image: 'https://images.unsplash.com/photo-1556438064-2d7646166914?w=300&h=400&fit=crop', category: 'moba', price: 'Mulai Rp 22.000' },
-      { id: 5, name: 'DOTA 2', image: 'https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=300&h=400&fit=crop', category: 'moba', price: 'Mulai Rp 25.000' },
-    ],
-    'battle-royale': [
-      { id: 6, name: 'Free Fire', image: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=300&h=400&fit=crop', category: 'battle-royale', price: 'Mulai Rp 10.000', popular: true },
-      { id: 7, name: 'PUBG Mobile', image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=400&fit=crop', category: 'battle-royale', price: 'Mulai Rp 15.000', popular: true },
-      { id: 8, name: 'Call of Duty Mobile', image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=300&h=400&fit=crop', category: 'battle-royale', price: 'Mulai Rp 20.000' },
-      { id: 9, name: 'Apex Legends Mobile', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&h=400&fit=crop', category: 'battle-royale', price: 'Mulai Rp 18.000' },
-    ],
-    rpg: [
-      { id: 10, name: 'Genshin Impact', image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=300&h=400&fit=crop', category: 'rpg', price: 'Mulai Rp 16.000', popular: true },
-      { id: 11, name: 'Honkai Star Rail', image: 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=300&h=400&fit=crop', category: 'rpg', price: 'Mulai Rp 16.000', popular: true },
-      { id: 12, name: 'Zenless Zone Zero', image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=400&fit=crop', category: 'rpg', price: 'Mulai Rp 16.000' },
-      { id: 13, name: 'Wuthering Waves', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&h=400&fit=crop', category: 'rpg', price: 'Mulai Rp 16.000' },
-      { id: 14, name: 'Tower of Fantasy', image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=400&fit=crop', category: 'rpg', price: 'Mulai Rp 15.000' },
-      { id: 15, name: 'Honkai Impact 3rd', image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=400&fit=crop', category: 'rpg', price: 'Mulai Rp 15.000' },
-    ],
-    card: [
-      { id: 16, name: 'Yu-Gi-Oh! Master Duel', image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=300&h=400&fit=crop', category: 'card', price: 'Mulai Rp 12.000' },
-      { id: 17, name: 'Marvel Snap', image: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=300&h=400&fit=crop', category: 'card', price: 'Mulai Rp 15.000' },
-      { id: 18, name: 'Magic Chess', image: 'https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=300&h=400&fit=crop', category: 'card', price: 'Mulai Rp 10.000' },
-    ],
-    racing: [
-      { id: 19, name: 'Racing Master', image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=400&fit=crop', category: 'racing', price: 'Mulai Rp 20.000' },
-      { id: 20, name: 'Asphalt 9', image: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=300&h=400&fit=crop', category: 'racing', price: 'Mulai Rp 18.000' },
-    ],
-    voucher: [
-      { id: 21, name: 'Google Play', image: 'https://images.unsplash.com/photo-1556438064-2d7646166914?w=300&h=400&fit=crop', category: 'voucher', price: 'Mulai Rp 10.000' },
-      { id: 22, name: 'Apple iTunes', image: 'https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=300&h=400&fit=crop', category: 'voucher', price: 'Mulai Rp 15.000' },
-      { id: 23, name: 'Steam Wallet', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&h=400&fit=crop', category: 'voucher', price: 'Mulai Rp 12.000' },
-    ],
-  };
-
-  // Get filtered products
-  const getFilteredProducts = () => {
-    let allProducts = [];
+  // Extract categories from products data
+  const categories = useMemo(() => {
+    if (!data?.data) return [{ id: 'all', name: 'Semua Produk', count: 0, icon: '🎮' }];
     
-    if (selectedCategory === 'all') {
-      Object.values(products).forEach(category => {
-        allProducts = [...allProducts, ...category];
-      });
-    } else {
-      allProducts = products[selectedCategory] || [];
-    }
+    const categoryMap = new Map();
+    categoryMap.set('all', { id: 'all', name: 'Semua Produk', count: data.data.length, icon: '🎮' });
+    
+    data.data.forEach(product => {
+      const categoryName = product.category_name;
+      if (categoryMap.has(categoryName)) {
+        categoryMap.get(categoryName).count++;
+      } else {
+        // Set icon based on category
+        let icon = '📦';
+        if (categoryName.toLowerCase().includes('game')) icon = '🎮';
+        else if (categoryName.toLowerCase().includes('premium') || categoryName.toLowerCase().includes('account')) icon = '⭐';
+        else if (categoryName.toLowerCase().includes('voucher')) icon = '💰';
+        
+        categoryMap.set(categoryName, {
+          id: categoryName,
+          name: categoryName,
+          count: 1,
+          icon: icon
+        });
+      }
+    });
+    
+    return Array.from(categoryMap.values());
+  }, [data]);
 
-    // Filter by search
-    if (searchQuery) {
-      allProducts = allProducts.filter(product => 
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  // Get filtered and sorted products
+  const filteredProducts = useMemo(() => {
+    if (!data?.data) return [];
+    
+    let products = [...data.data].filter(product => product.is_active === 1);
+    
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      products = products.filter(product => product.category_name === selectedCategory);
+    }
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      products = products.filter(product => 
+        product.title.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query) ||
+        product.category_name.toLowerCase().includes(query)
       );
     }
-
+    
     // Sort products
     if (sortBy === 'popular') {
-      allProducts.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
+      products.sort((a, b) => b.best_seller - a.best_seller);
     } else if (sortBy === 'name') {
-      allProducts.sort((a, b) => a.name.localeCompare(b.name));
+      products.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortBy === 'newest') {
+      products.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     }
+    
+    return products;
+  }, [data, selectedCategory, searchQuery, sortBy]);
 
-    return allProducts;
-  };
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} flex items-center justify-center`}>
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mx-auto mb-4" />
+          <p className="text-lg">Memuat produk...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const filteredProducts = getFilteredProducts();
+  // Error state
+  if (error) {
+    return (
+      <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} flex items-center justify-center`}>
+        <div className="text-center">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h3 className="text-xl font-bold mb-2">Terjadi Kesalahan</h3>
+          <p className="text-gray-400 mb-4">Gagal memuat data produk</p>
+          <button 
+            onClick={refetch}
+            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors"
+          >
+            Coba Lagi
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
@@ -236,28 +305,35 @@ export default function AllProductsPage() {
             {viewMode === 'grid' && (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
                 {filteredProducts.map((product) => (
-                  <div key={product.id} className="group cursor-pointer">
-                    <div className="relative aspect-3/4 rounded-xl overflow-hidden mb-2 sm:mb-3">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {product.popular && (
-                        <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-yellow-500 text-black text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg">
-                          Popular
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3">
-                          <p className="text-xs sm:text-sm font-medium text-white mb-0.5 sm:mb-1 line-clamp-2">{product.name}</p>
-                          <p className="text-[10px] sm:text-xs text-gray-300">{product.price}</p>
+                  <Link href={`/product/${product.slug}`}>
+                    <div key={product.id} className="group cursor-pointer">
+                      <div className="relative aspect-3/4 rounded-xl overflow-hidden mb-2 sm:mb-3">
+                        <Image
+                          src={product.image_thumbnail || product.image_cover}
+                          alt={product.title}
+                          fill
+                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=400&fit=crop';
+                          }}
+                        />
+                        {product.best_seller === 1 && (
+                          <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-yellow-500 text-black text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg z-10">
+                            Popular
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-5">
+                          <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3">
+                            <p className="text-xs sm:text-sm font-medium text-white mb-0.5 sm:mb-1 line-clamp-2">{product.title}</p>
+                            <p className="text-[10px] sm:text-xs text-gray-300">{product.category_name}</p>
+                          </div>
                         </div>
                       </div>
+                      <h3 className="font-medium text-xs sm:text-sm mb-0.5 sm:mb-1 line-clamp-1 px-0.5">{product.title}</h3>
+                      <p className="text-[10px] sm:text-xs text-indigo-400 px-0.5">{product.category_name}</p>
                     </div>
-                    <h3 className="font-medium text-xs sm:text-sm mb-0.5 sm:mb-1 line-clamp-1 px-0.5">{product.name}</h3>
-                    <p className="text-[10px] sm:text-xs text-indigo-400 px-0.5">{product.price}</p>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
@@ -266,39 +342,46 @@ export default function AllProductsPage() {
             {viewMode === 'list' && (
               <div className="space-y-3 sm:space-y-4">
                 {filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className={`flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl ${
-                      darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
-                    } transition-colors cursor-pointer`}
-                  >
-                    <div className="w-20 sm:w-24 h-28 sm:h-32 rounded-lg overflow-hidden shrink-0">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-1 sm:mb-2">
-                        <div className="min-w-0">
-                          <h3 className="font-bold text-base sm:text-lg mb-0.5 sm:mb-1 truncate">{product.name}</h3>
-                          <p className="text-xs sm:text-sm text-gray-400 capitalize">
-                            {categories.find(c => c.id === product.category)?.name}
-                          </p>
-                        </div>
-                        {product.popular && (
-                          <span className="bg-yellow-500 text-black text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
-                            Popular
-                          </span>
-                        )}
+                  <Link href={`/product/${product.slug}`}>
+                    <div
+                      key={product.id}
+                      className={`flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl ${
+                        darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
+                      } transition-colors cursor-pointer`}
+                    >
+                      <div className="relative w-20 sm:w-24 h-28 sm:h-32 rounded-lg overflow-hidden shrink-0">
+                        <Image
+                          src={product.image_thumbnail || product.image_cover}
+                          alt={product.title}
+                          fill
+                          sizes="(max-width: 640px) 80px, 96px"
+                          className="object-cover"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=400&fit=crop';
+                          }}
+                        />
                       </div>
-                      <p className="text-indigo-400 font-semibold text-sm sm:text-base mb-2 sm:mb-3">{product.price}</p>
-                      <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-xs sm:text-sm font-medium transition-colors">
-                        Top Up Sekarang
-                      </button>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-1 sm:mb-2">
+                          <div className="min-w-0">
+                            <h3 className="font-bold text-base sm:text-lg mb-0.5 sm:mb-1 truncate">{product.title}</h3>
+                            <p className="text-xs sm:text-sm text-gray-400">
+                              {product.category_name}
+                            </p>
+                          </div>
+                          {product.best_seller === 1 && (
+                            <span className="bg-yellow-500 text-black text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
+                              Popular
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-gray-400 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-2">{product.description}</p>
+                        <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-xs sm:text-sm font-medium transition-colors">
+                          Top Up Sekarang
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
