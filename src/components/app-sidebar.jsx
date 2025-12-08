@@ -52,6 +52,16 @@ const data = {
       ],
     },
     {
+      title: "News",
+      url: "#",
+      items: [
+        {
+          title: "Data News",
+          url: "/admin/news",
+        },
+      ],
+    },
+    {
       title: "Setting Website",
       url: "#",
       items: [

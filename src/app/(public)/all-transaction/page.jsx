@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Search, Filter, ChevronDown, Calendar, Receipt, Clock, CheckCircle, XCircle, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGetDataAllTransaction } from '@/data/public/all-transaction/all-transaction-datas';
+import Image from 'next/image';
 
 export default function TransactionPage() {
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -73,6 +74,7 @@ export default function TransactionPage() {
       amount: parseInt(item.total_amount) || 0,
       status: normalizeStatus(item.payment_progress),
       date: formatDate(item.date),
+      image: item.image_thumbnail,
     };
   }) || [];
 
@@ -106,6 +108,7 @@ export default function TransactionPage() {
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const startIdx = (currentPage - 1) * itemsPerPage;
   const paginated = filtered.slice(startIdx, startIdx + itemsPerPage);
+  
 
   const getStatusCount = (id) => id === 'all' ? transactions.length : transactions.filter(t => t.status === id).length;
 
@@ -345,8 +348,14 @@ export default function TransactionPage() {
                       <div key={t.id} className="bg-gray-800 rounded-xl p-3 sm:p-4 hover:bg-gray-800/80 transition-colors">
                         <div className="flex items-start sm:items-center gap-3">
                           {/* Game Avatar */}
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-base sm:text-lg font-bold shrink-0">
-                            {t.game.charAt(0)}
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-base sm:text-lg font-bold shrink-0 relative">
+                           <Image
+                              src={t.image}
+                              alt="Logo"
+                              fill
+                              unoptimized
+                              className="cover"
+                            />
                           </div>
 
                           {/* Content */}

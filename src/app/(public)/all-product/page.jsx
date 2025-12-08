@@ -309,6 +309,7 @@ export default function AllProductsPage() {
                     <div key={product.id} className="group cursor-pointer">
                       <div className="relative aspect-3/4 rounded-xl overflow-hidden mb-2 sm:mb-3">
                         <Image
+                          unoptimized
                           src={product.image_thumbnail || product.image_cover}
                           alt={product.title}
                           fill
@@ -351,6 +352,7 @@ export default function AllProductsPage() {
                     >
                       <div className="relative w-20 sm:w-24 h-28 sm:h-32 rounded-lg overflow-hidden shrink-0">
                         <Image
+                          unoptimized
                           src={product.image_thumbnail || product.image_cover}
                           alt={product.title}
                           fill

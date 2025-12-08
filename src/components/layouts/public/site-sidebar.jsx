@@ -1,19 +1,35 @@
 "use client";
 import { Home, Gamepad2, CreditCard, List, HelpCircle, Users, Plus } from 'lucide-react';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
-export default function Sidebar() {
+export default function Sidebar({dataLogo}) {
   const pathname = usePathname();
-
   const isActive = (path) => pathname === path;
+  console.log("dataLogo", dataLogo.logo);
+  
   return (
     <aside className={`fixed left-0 top-0 h-full w-48 bg-gray-800 border-r border-gray-700 z-50 hidden lg:block text-white`}>
       <div className="p-4">
         <div className="flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-            <Gamepad2 className="w-5 h-5" />
-          </div>
-          <span className="font-bold text-lg">GameVault</span>
+          {dataLogo ? (
+            <div className="relative w-full h-10">
+              <Image
+                src={dataLogo.logo}
+                alt="Logo"
+                fill
+                unoptimized
+                className="object-contain"
+              />
+            </div>
+          ) : (
+            <>
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                <Gamepad2 className="w-5 h-5" />
+              </div>
+              <span className="font-bold text-lg">GameVault</span>
+            </>
+          )}
         </div>
 
         <nav className="space-y-1">

@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/sidebar"
 import { SetAdmin } from "@/features/admin/dashboard/setadmin"
 import { authClient } from "@/utils/auth-client"
+import "@blocknote/core/style.css";
+import "@blocknote/shadcn/style.css";
 
 
 export default async function AdminLayout({ children }) {
