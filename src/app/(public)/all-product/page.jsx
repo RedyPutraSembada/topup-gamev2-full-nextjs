@@ -5,58 +5,6 @@ import { useGetDataAllProduct } from '@/data/public/all-product/all-product-data
 import Link from 'next/link';
 import Image from 'next/image';
 
-// Mock hook untuk demo - ganti dengan hook asli Anda
-// const useGetDataAllProduct = () => {
-//   // Simulasi data dari API
-//   const mockData = {
-//     data: [
-//       {
-//         id: 1,
-//         title: "Mobile Legend",
-//         slug: "mobile-legend",
-//         category_name: "Game",
-//         image_thumbnail: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=300&h=400&fit=crop",
-//         image_cover: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=300&h=400&fit=crop",
-//         description: "Beli Top Up Diamond MLBB Termurah",
-//         best_seller: 1,
-//         is_active: 1,
-//         type_product_id: 1
-//       },
-//       {
-//         id: 2,
-//         title: "Netflix",
-//         slug: "netflix",
-//         category_name: "Account Premium",
-//         image_thumbnail: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=300&h=400&fit=crop",
-//         image_cover: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=300&h=400&fit=crop",
-//         description: "Description Netflix",
-//         best_seller: 0,
-//         is_active: 1,
-//         type_product_id: 2
-//       },
-//       {
-//         id: 3,
-//         title: "Free Fire",
-//         slug: "free-fire",
-//         category_name: "Game",
-//         image_thumbnail: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=300&h=400&fit=crop",
-//         image_cover: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=300&h=400&fit=crop",
-//         description: "Deskripsi Free Fire",
-//         best_seller: 0,
-//         is_active: 1,
-//         type_product_id: 1
-//       }
-//     ]
-//   };
-  
-//   return {
-//     data: mockData,
-//     error: null,
-//     isLoading: false,
-//     refetch: () => {}
-//   };
-// };
-
 export default function AllProductsPage() {
   const [darkMode] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
