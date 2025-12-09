@@ -69,6 +69,10 @@ const data = {
           title: "Data Website",
           url: "/admin/data-website",
         },
+        {
+          title: "Images Slideshow",
+          url: "/admin/images-slideshow",
+        },
       ],
     },
   ],
