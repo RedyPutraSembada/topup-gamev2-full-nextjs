@@ -3,6 +3,7 @@
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import { toast } from "sonner";
+import "@blocknote/shadcn/style.css";
 
 const uriUpload = process.env.NEXT_PUBLIC_UPLOAD_URI
 const MAX_FILE_SIZE_MB = process.env.NEXT_PUBLIC_MAX_FILE_SIZE_MB

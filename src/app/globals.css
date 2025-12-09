@@ -119,4 +119,11 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .bn-editor,
+  .bn-container,
+  .bn-block,
+  .bn-block-content {
+    background: transparent !important;
+  }
 }

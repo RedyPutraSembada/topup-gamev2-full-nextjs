@@ -21,6 +21,15 @@ export async function getAllDataNews() {
     }
 }
 
+
+export async function getNewsBySlug(slug) {
+  try {
+    const data = await db("news").where("slug", slug).first();
+    return data;
+  } catch (error) {
+    throw new Error("Failed to get News by slug");
+  }
+}
 // export async function createNews(data) {
 //   try {
 //     const [id] = await db("news").insert({

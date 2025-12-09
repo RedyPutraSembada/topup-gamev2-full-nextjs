@@ -2,58 +2,7 @@
 import { useState, useMemo } from 'react';
 import { Search, Filter, ChevronDown, Calendar, Clock, ChevronLeft, ChevronRight, BookOpen, Tag } from 'lucide-react';
 import { useGetDataAllNews } from '@/data/public/all-news/all-news-datas';
-
-// Mock hook untuk demo - ganti dengan hook asli Anda
-// const useGetDataAllNews = () => {
-//   const mockData = {
-//     data: [
-//       {
-//         id: 3,
-//         title: "Ada pelatihan untuk kampus juga",
-//         content: "[{\"id\":\"0a3627bf-712b-4ee1-b1cd-7454e26b33e4\",\"type\":\"heading\",\"props\":{\"backgroundColor\":\"rgb(255, 255, 255)\",\"textColor\":\"rgb(0, 0, 0)\",\"textAlignment\":\"left\",\"level\":2,\"isToggleable\":false},\"content\":[{\"type\":\"text\",\"text\":\"Where does it come from?\",\"styles\":{}}],\"children\":[]}]",
-//         slug: "ada-pelatihan-untuk-kampus-juga",
-//         image_hero: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&h=400&fit=crop",
-//         date: "2025-12-01T22:21:00.000Z",
-//         tags: "[{\"name\":\"Kampus\",\"order\":1},{\"name\":\"Pelatihan\",\"order\":2}]",
-//         is_active: 1,
-//         created_at: "2025-12-08T22:21:40.000Z",
-//         updated_at: "2025-12-08T22:21:40.000Z"
-//       },
-//       {
-//         id: 2,
-//         title: "berita terbaru ML",
-//         content: "[{\"id\":\"7343f104-6b4a-45da-bde7-ef6f36d02d4e\",\"type\":\"heading\"}]",
-//         slug: "berita-terbaru-ml",
-//         image_hero: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=400&fit=crop",
-//         date: "2025-12-05T22:20:00.000Z",
-//         tags: "[{\"name\":\"ML\",\"order\":1},{\"name\":\"Game\",\"order\":2}]",
-//         is_active: 1,
-//         created_at: "2025-12-08T22:20:57.000Z",
-//         updated_at: "2025-12-08T22:20:57.000Z"
-//       },
-//       {
-//         id: 1,
-//         title: "Netflix berita",
-//         content: "[{\"id\":\"097beb5d-8556-4dc0-8f85-ee67128b7edf\",\"type\":\"heading\"}]",
-//         slug: "netflix-berita-",
-//         image_hero: "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=600&h=400&fit=crop",
-//         date: "2025-12-08T22:09:00.000Z",
-//         tags: "[{\"name\":\"net\",\"order\":1},{\"name\":\"flix\",\"order\":2}]",
-//         is_active: 1,
-//         created_at: "2025-12-08T22:14:38.000Z",
-//         updated_at: "2025-12-08T22:14:38.000Z"
-//       }
-//     ],
-//     success: true
-//   };
-  
-//   return { 
-//     data: mockData, 
-//     error: null, 
-//     isLoading: false, 
-//     refetch: () => {} 
-//   };
-// };
+import Link from 'next/link';
 
 export default function AllNewsPage() {
   const [selectedTag, setSelectedTag] = useState('all');
@@ -291,9 +240,6 @@ export default function AllNewsPage() {
               </div>
               <div className="lg:w-1/2 p-4 sm:p-6 flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-3 flex-wrap">
-                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-400">
-                    Featured
-                  </span>
                   {featuredArticle.tags.slice(0, 2).map((tag, idx) => (
                     <span 
                       key={idx}
@@ -319,9 +265,9 @@ export default function AllNewsPage() {
                     {featuredArticle.readTime}
                   </span>
                 </div>
-                <button className="self-start px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors">
+                <Link href={`/news/${featuredArticle.slug}`} className="self-start px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors">
                   Baca Selengkapnya
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -418,46 +364,48 @@ export default function AllNewsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               {paginated.map((article) => (
-                <article 
-                  key={article.id} 
-                  className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-colors group cursor-pointer"
-                >
-                  <div className="relative h-40 sm:h-44 overflow-hidden">
-                    <img
-                      src={article.image}
-                      alt={article.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
-                      {article.tags.slice(0, 2).map((tag, idx) => (
-                        <span 
-                          key={idx}
-                          className="px-2 py-1 rounded-full text-xs font-medium bg-gray-900/80 text-gray-200 backdrop-blur-sm"
-                        >
-                          {tag.name}
+                <Link href={`/news/${article.slug}`}>
+                  <article 
+                    key={article.id} 
+                    className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-colors group cursor-pointer"
+                  >
+                    <div className="relative h-40 sm:h-44 overflow-hidden">
+                      <img
+                        src={article.image}
+                        alt={article.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
+                        {article.tags.slice(0, 2).map((tag, idx) => (
+                          <span 
+                            key={idx}
+                            className="px-2 py-1 rounded-full text-xs font-medium bg-gray-900/80 text-gray-200 backdrop-blur-sm"
+                          >
+                            {tag.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-bold text-sm sm:text-base mb-2 line-clamp-2 group-hover:text-indigo-400 transition-colors">
+                        {article.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-400 mb-3 line-clamp-2">
+                        {article.excerpt}
+                      </p>
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {formatDate(article.date)}
                         </span>
-                      ))}
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5" />
+                          {article.readTime}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-sm sm:text-base mb-2 line-clamp-2 group-hover:text-indigo-400 transition-colors">
-                      {article.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-gray-400 mb-3 line-clamp-2">
-                      {article.excerpt}
-                    </p>
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5" />
-                        {formatDate(article.date)}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" />
-                        {article.readTime}
-                      </span>
-                    </div>
-                  </div>
-                </article>
+                  </article>
+                </Link>
               ))}
             </div>
 
