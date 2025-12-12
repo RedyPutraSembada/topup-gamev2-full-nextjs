@@ -8,7 +8,8 @@ export async function getAllDataNews() {
             SELECT
             *
             FROM news
-            ORDER BY id DESC;
+            ORDER BY id DESC
+            limit 3;
         `);
         
         return {

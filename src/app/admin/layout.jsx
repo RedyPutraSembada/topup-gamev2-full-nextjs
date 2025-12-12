@@ -7,20 +7,32 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { SetAdmin } from "@/features/admin/dashboard/setadmin"
-import { authClient } from "@/utils/auth-client"
+import { auth } from "@/utils/auth";
+// import { SetAdmin } from "@/features/admin/dashboard/setadmin"
+// import { authClient } from "@/utils/auth-client"
 import "@blocknote/core/style.css";
 import "@blocknote/shadcn/style.css";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 
 export default async function AdminLayout({ children }) {
+    const session = await auth.api.getSession({ headers: await headers() });
+
+    if (!session) {
+        redirect("/sign-in");
+    }
+
+    if (session.user.role !== 'admin') {
+        redirect("/");
+    }
     return (
         <SidebarProvider>
             <AppSidebar />
