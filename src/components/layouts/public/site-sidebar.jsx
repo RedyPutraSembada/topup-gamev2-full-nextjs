@@ -1,6 +1,7 @@
 "use client";
 import { Home, Gamepad2, CreditCard, List, HelpCircle, Users, Plus, Newspaper, X } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export default function Sidebar({dataLogo, isOpen, onClose}) {
@@ -15,13 +16,15 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
           <div className="flex items-center gap-2 mb-8">
             {dataLogo ? (
               <div className="relative w-full h-10">
-                <Image
-                  src={dataLogo.logo}
-                  alt="Logo"
-                  fill
-                  unoptimized
-                  className="object-contain"
-                />
+                <Link href={"/"}>
+                  <Image
+                    src={dataLogo.logo}
+                    alt="Logo"
+                    fill
+                    unoptimized
+                    className="object-contain"
+                  />
+                </Link>
               </div>
             ) : (
               <>

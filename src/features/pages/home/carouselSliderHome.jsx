@@ -82,9 +82,6 @@ export function CarouselSliderHome({ data_slider }) {
       {/* Elegant Gradient Overlay */}
       <div 
         className="absolute inset-0 z-10"
-        style={{
-          background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)'
-        }}
       />
 
       {/* Content - Positioned at Left Center */}

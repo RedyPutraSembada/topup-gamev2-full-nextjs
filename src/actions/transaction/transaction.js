@@ -6,243 +6,10 @@ import * as gamepoint from "../provider/gamepoint";
 import * as moogold from "../provider/moogold";
 import * as digiflash from "../provider/digiflash";
 import * as duitku from "../payment-getaway/duitku"
-import { success } from "zod";
+import { Resend } from "resend";
+import TransactionEmail from "@/components/email/transaction-emailv2";
 
-  // export async function createTransaction(data) {
-  //   try {
-  //     const orderId = generateOrderId();
-  //     console.log("data", data);
-
-  //     const dataTransaction = {
-  //       user_id: data.userId,
-  //       product_in_provider_id: data.selectedPackage.id_product_in_provider,
-  //       date: db.fn.now(),
-  //       metode: data.selectedPaymentMethod.payment_method,
-  //       payment_progress: "Processing",
-  //       order_id: orderId,
-  //       price: data.pricing.base_price,
-  //       using_member: data.using_member ?? null,
-  //       total_amount: data.pricing.total,
-  //       voucher_id: data.voucher ? data.voucher.voucher_id : null,
-  //       voucher: data.voucher ? data.voucher.voucher : null,
-  //       is_active: 1,
-  //       data_input_user: JSON.stringify(data),
-  //       created_at: db.fn.now(),
-  //       updated_at: db.fn.now(),
-  //     };
-
-  //     await db("transactions").insert(dataTransaction);
-
-  //     const values = Object.values(data.userInputs);
-  //     console.log("user inputs", values);
-
-  //     const productInProvider = await db("product_in_providers")
-  //       .leftJoin(
-  //         "provider_products as pp",
-  //         "product_in_providers.product_provider_id",
-  //         "pp.id"
-  //       )
-  //       .leftJoin("products as p", "product_in_providers.product_id", "p.id")
-  //       .leftJoin("type_products as tp", "p.type_product_id", "tp.id")
-  //       .where(
-  //         "product_in_providers.id",
-  //         data.selectedPackage.id_product_in_provider
-  //       )
-  //       .select(
-  //         "product_in_providers.*",
-  //         "pp.name as provider_name",
-  //         "tp.name as type_product_name"
-  //       )
-  //       .first();
-
-  //     // ✅ Cek saldo user jika menggunakan saldo
-  //     if (data.selectedPaymentMethod.payment_method === "saldo" && data.userId) {
-  //       const user = await db("user").where("id", data.userId).first();
-  //       if (Number(user.saldo) < Number(data.pricing.total)) {
-  //         return { success: false, message: "Saldo tidak cukup" };
-  //       }
-
-  //       const saldoUser = Number(user.saldo) - Number(data.pricing.total);
-
-  //       // ✅ Order ke provider
-  //       if (productInProvider.type_product_name === "Game") {
-  //         const response = await TransactionForProvider(productInProvider, values, data, orderId);
-  //         console.log("response", response);
-
-  //         if (response.success === true) {
-  //           // ✅ Update saldo user
-  //           try {
-  //             await db("user")
-  //               .where("id", data.userId)
-  //               .update({ saldo: saldoUser });
-  //           } catch (e) {
-  //             console.error("Gagal update saldo:", e);
-  //           }
-
-  //           // ✅ Update voucher jika ada
-  //           try {
-  //             if (dataTransaction.voucher_id) {
-  //               await db("vouchers")
-  //                 .where("id", dataTransaction.voucher_id)
-  //                 .update({ total_use: db.raw("COALESCE(total_use, 0) + 1") });
-  //             }
-  //           } catch (e) {
-  //             console.error("Gagal update voucher:", e);
-  //           }
-
-  //           // ✅ Update transaksi jadi sukses
-  //           await db("transactions")
-  //             .where("order_id", orderId)
-  //             .update({
-  //               payment_progress: "Success",
-  //               updated_at: db.fn.now(),
-  //             });
-
-  //           return {
-  //             success: true,
-  //             message: "Transaksi Berhasil",
-  //             order_id: orderId,
-  //           };
-  //         } else {
-  //           return {
-  //             success: false,
-  //             message: "Gagal Transaksi ke Provider",
-  //             order_id: null,
-  //           };
-  //         }
-  //       }
-  //     }
-
-  //     return { success: true, data };
-  //   } catch (error) {
-  //     console.log("error", error);
-  //     throw new Error("Failed to create Transaction");
-  //   }
-// }
-  
-
-// export async function createTransaction(data) {
-//   const trx = await db.transaction(); // mulai transaksi
-
-//   try {
-//     const orderId = generateOrderId();
-//     const now = db.fn.now();
-
-//     const dataTransaction = {
-//       user_id: data.userId,
-//       product_in_provider_id: data.selectedPackage.id_product_in_provider,
-//       date: now,
-//       metode: data.selectedPaymentMethod.payment_method,
-//       payment_progress: "Processing",
-//       order_id: orderId,
-//       price: data.pricing.base_price,
-//       using_member: data.using_member ?? null,
-//       total_amount: data.pricing.total,
-//       voucher_id: data.voucher ? data.voucher.voucher_id : null,
-//       voucher: data.voucher ? data.voucher.voucher : null,
-//       is_active: 1,
-//       data_input_user: JSON.stringify(data),
-//       created_at: now,
-//       updated_at: now,
-//     };
-
-//     // ✅ Simpan transaksi awal
-//     const [transactionId] = await trx("transactions").insert(dataTransaction);
-
-//     // Ambil user inputs aman
-//     const values = Object.values(data.userInputs ?? {});
-
-//     // ✅ Ambil produk dan provider
-//     const productInProvider = await trx("product_in_providers")
-//       .leftJoin("provider_products as pp", "product_in_providers.product_provider_id", "pp.id")
-//       .leftJoin("products as p", "product_in_providers.product_id", "p.id")
-//       .leftJoin("type_products as tp", "p.type_product_id", "tp.id")
-//       .where("product_in_providers.id", data.selectedPackage.id_product_in_provider)
-//       .select(
-//         "product_in_providers.*",
-//         "pp.name as provider_name",
-//         "tp.name as type_product_name"
-//       )
-//       .first();
-
-//     // ✅ Kalau pakai voucher, cek kuota dulu secara atomik
-//     if (dataTransaction.voucher_id) {
-//       const updated = await trx("vouchers")
-//         .where("id", dataTransaction.voucher_id)
-//         .whereRaw("COALESCE(total_use, 0) < COALESCE(kuota, 0)")
-//         .update({ total_use: db.raw("COALESCE(total_use, 0) + 1") });
-
-//       if (updated === 0) {
-//         await trx.rollback();
-//         return { success: false, message: "Kuota voucher sudah habis" };
-//       }
-//     }
-
-//     // ✅ Kalau bayar pakai saldo
-//     if (data.selectedPaymentMethod.payment_method === "saldo" && data.userId) {
-//       const user = await trx("user").where("id", data.userId).forUpdate().first();
-
-//       if (!user) {
-//         await trx.rollback();
-//         return { success: false, message: "User tidak ditemukan" };
-//       }
-
-//       if (Number(user.saldo) < Number(data.pricing.total)) {
-//         await trx.rollback();
-//         return { success: false, message: "Saldo tidak cukup" };
-//       }
-
-//       // Kurangi saldo user
-//       const saldoBaru = Number(user.saldo) - Number(data.pricing.total);
-//       await trx("user").where("id", data.userId).update({ saldo: saldoBaru });
-//     }
-
-//     // ✅ Jalankan transaksi ke provider (misalnya Digiflazz)
-//     let providerResponse = { success: false };
-//     if (productInProvider.type_product_name === "Game") {
-//       providerResponse = await TransactionForProvider(productInProvider, values, data, orderId);
-//     } else if (productInProvider.type_product_name === "Pulsa" || productInProvider.type_product_name === "Data") {
-//       providerResponse = await TransactionForProvider(productInProvider, values, data, orderId);
-//     }
-
-//     // ✅ Kalau provider berhasil
-//     if (providerResponse.success === true) {
-//       await trx("transactions")
-//         .where("order_id", orderId)
-//         .update({
-//           payment_progress: "Success",
-//           updated_at: db.fn.now(),
-//         });
-
-//       await trx.commit();
-//       return {
-//         success: true,
-//         message: "Transaksi Berhasil",
-//         order_id: orderId,
-//       };
-//     }
-
-//     // ❌ Kalau gagal ke provider, rollback semua
-//     await trx("transactions")
-//       .where("order_id", orderId)
-//       .update({
-//         payment_progress: "Failed",
-//         updated_at: db.fn.now(),
-//       });
-
-//     await trx.rollback();
-//     return {
-//       success: false,
-//       message: "Gagal Transaksi ke Provider",
-//       order_id: null,
-//     };
-//   } catch (error) {
-//     console.error("Error createTransaction:", error);
-//     await trx.rollback();
-//     return { success: false, message: "Terjadi kesalahan sistem" };
-//   }
-// }
-
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function createTransaction(data) {
   // Gunakan database transaction untuk atomicity
@@ -353,7 +120,8 @@ export async function createTransaction(data) {
     // ========================================
     
     const dataTransaction = {
-      user_id: data.userId,
+      user_id: data.userId, 
+      no_wa: data.no_wa,
       product_in_provider_id: data.selectedPackage.id_product_in_provider,
       date: trx.fn.now(),
       metode: data.selectedPaymentMethod.payment_method,
@@ -491,6 +259,18 @@ export async function createTransaction(data) {
           // Semua perubahan (saldo, voucher, transaksi) disimpan secara atomic
           // Jika salah satu gagal di atas, semua akan di-rollback
           await trx.commit();
+          await resend.emails.send({
+            from: "support@goxpay.id",
+            to: "goxpay.id@gmail.com",
+            subject: "Information Transaction",
+            react: TransactionEmail({
+              nameProduct: data.selectedPackage.name,
+              noWa: data.no_wa,
+              statusTransaction: "success",
+              inputData: data.userInputs,
+              amountPayment: data.pricing.total
+            }),
+          });
 
           return {
             success: true,
@@ -507,10 +287,23 @@ export async function createTransaction(data) {
               provider_order_id: response.provider_order_id,
               updated_at: trx.fn.now(),
             });
-
-          // Commit transaksi (untuk record history) tapi status Failed
-          // Saldo dan voucher tidak dikurangi karena belum sampai step 6
-          await trx.commit();
+          
+            
+            // Commit transaksi (untuk record history) tapi status Failed
+            // Saldo dan voucher tidak dikurangi karena belum sampai step 6
+            await trx.commit();
+            await resend.emails.send({
+              from: "support@goxpay.id",
+              to: "goxpay.id@gmail.com",
+              subject: "Information Transaction",
+              react: TransactionEmail({
+                nameProduct: data.selectedPackage.name,
+                noWa: data.no_wa,
+                statusTransaction: "failed",
+                inputData: data.userInputs,
+                amountPayment: data.pricing.total
+              }),
+            });
 
           return {
             success: false,
@@ -557,9 +350,24 @@ export async function createTransaction(data) {
               payment_progress: "pending",
               updated_at: trx.fn.now(),
             });
+        
+        
 
         // Transaksi dibuat dengan status pending, menunggu callback payment
         await trx.commit();
+        
+        await resend.emails.send({
+          from: "support@goxpay.id",
+          to: "goxpay.id@gmail.com",
+          subject: "Information Transaction",
+          react: TransactionEmail({
+            nameProduct: data.selectedPackage.name,
+            noWa: data.no_wa,
+            statusTransaction: "pending",
+            inputData: data.userInputs,
+            amountPayment: data.pricing.total
+          }),
+        });
         
         return { 
           success: true, 
@@ -596,26 +404,6 @@ export async function createTransaction(data) {
   }
 }
 
-// ========================================
-// HELPER: Cek status voucher (Pre-validation)
-// ========================================
-/**
- * Helper function untuk cek voucher availability TANPA lock
- * Digunakan untuk quick validation sebelum masuk ke transaction lock
- * 
- * ⚠️ CATATAN PENTING:
- * - Helper ini TIDAK mencegah race condition
- * - Helper ini hanya untuk QUICK FAIL (reject request invalid lebih cepat)
- * - Masih perlu LOCK + DOUBLE CHECK di dalam transaction untuk safety
- * 
- * Kenapa perlu helper + lock?
- * 1. Helper (step 1): Cepat reject 99% request yang invalid (hemat resource)
- * 2. Lock (step 2): Prevent race condition untuk 1% request yang valid dan concurrent
- * 
- * Analogi:
- * - Helper = Security guard di depan (check tiket basic)
- * - Lock = Pintu masuk dengan turnstile (one by one, prevent double entry)
- */
 export async function checkVoucherAvailability(voucherId) {
   try {
     // Query tanpa lock (read-only check)
@@ -906,11 +694,24 @@ export async function callbackPayment(data) {
             metadata_pg: metadataPg, // 👈 PENAMBAHAN metadata_pg
             updated_at: trx.fn.now(),
           });
-
-        // ========================================
-        // 7. COMMIT TRANSACTION (Simpan semua perubahan)
-        // ========================================
-        await trx.commit();
+        
+          
+          // ========================================
+          // 7. COMMIT TRANSACTION (Simpan semua perubahan)
+          // ========================================
+          await trx.commit();
+          await resend.emails.send({
+              from: "support@goxpay.id",
+              to: "goxpay.id@gmail.com",
+              subject: "Information Transaction",
+              react: TransactionEmail({
+                nameProduct: userData.selectedPackage.name,
+                noWa: userData.no_wa,
+                statusTransaction: "success",
+                inputData: userData.userInputs,
+                amountPayment: userData.pricing.total
+              }),
+            });
 
         return {
           success: true,
@@ -931,6 +732,18 @@ export async function callbackPayment(data) {
 
         // Commit transaksi (untuk record history) tapi status Failed
         await trx.commit();
+        await resend.emails.send({
+            from: "support@goxpay.id",
+            to: "goxpay.id@gmail.com",
+            subject: "Information Transaction",
+            react: TransactionEmail({
+              nameProduct: userData.selectedPackage.name,
+              noWa: userData.no_wa,
+              statusTransaction: "failed",
+              inputData: userData.userInputs,
+              amountPayment: userData.pricing.total
+            }),
+          });
 
         return {
           success: false,

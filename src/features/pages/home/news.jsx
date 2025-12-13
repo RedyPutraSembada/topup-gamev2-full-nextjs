@@ -6,7 +6,7 @@ export default async function News() {
   
   return (
     <div className="px-4 lg:px-8 pb-8 text-white">
-      <h2 className="text-2xl font-bold mb-4">Artikel terbaru seputar berita game</h2>
+      <h2 className="text-2xl font-bold mb-4">Artikel terbaru & Berita game</h2>
       <p className="text-sm text-gray-400 mb-6">
         Dapatkan informasi terbaru seputar dunia game! Temukan panduan lengkap untuk meningkatkan pengalaman bermain, serta berita terkini mengenai promo, update terkini, dan komunitas gamer.
       </p>

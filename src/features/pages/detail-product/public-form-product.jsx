@@ -12,6 +12,19 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+const countryCodes = [
+  { code: "+62", country: "ID", flag: "🇮🇩" },
+  { code: "+60", country: "MY", flag: "🇲🇾" },
+  { code: "+65", country: "SG", flag: "🇸🇬" },
+  { code: "+66", country: "TH", flag: "🇹🇭" },
+  { code: "+84", country: "VN", flag: "🇻🇳" },
+  { code: "+63", country: "PH", flag: "🇵🇭" },
+  { code: "+1", country: "US", flag: "🇺🇸" },
+  { code: "+44", country: "UK", flag: "🇬🇧" },
+  { code: "+91", country: "IN", flag: "🇮🇳" },
+  // Tambahkan negara lain sesuai kebutuhan
+];
+
 export function PublicFormProduct({ product, paymentMethod }) {
   console.log("product", product);
   
@@ -23,6 +36,8 @@ export function PublicFormProduct({ product, paymentMethod }) {
   const [selectedDiamond, setSelectedDiamond] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [voucher, setVoucher] = useState("");
+  const [countryCode, setCountryCode] = useState("+62"); // Default Indonesia
+  const [noWhatsapp, setNoWhatsapp] = useState("");
   const [voucherData, setVoucherData] = useState(null);
   const [discount, setDiscount] = useState(0);
   const [usernameChecked, setUsernameChecked] = useState(false);
@@ -71,6 +86,7 @@ export function PublicFormProduct({ product, paymentMethod }) {
 
   // Cek apakah perlu validasi username
   const needUsernameCheck = product.is_check_username === 1;
+  const whatsappFilled = noWhatsapp.trim() !== "";
   const canProceed = needUsernameCheck ? usernameChecked : true;
 
   const handleChange = (name, value) => {
@@ -235,6 +251,8 @@ export function PublicFormProduct({ product, paymentMethod }) {
         id: product.id,
         kode: product.kode,
       },
+
+      no_wa: `${countryCode}${noWhatsapp}`,
 
       // Data Paket yang Dipilih
       selectedPackage: {
@@ -524,6 +542,42 @@ export function PublicFormProduct({ product, paymentMethod }) {
                     di kiri atas dalam game
                   </p>
                 </div>
+              </div>
+
+              <div className="mb-4 pb-4 border-b border-gray-700">
+                <label className="block text-sm font-medium mb-2">
+                  No WhatsApp <span className="text-red-500">*</span>
+                </label>
+                <div className="flex gap-2">
+                  {/* Country Code Selector */}
+                  <select
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                    className="w-24 px-2 py-3 rounded-lg border bg-gray-900 border-gray-700 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 text-sm"
+                  >
+                    {countryCodes.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.flag} {c.code}
+                      </option>
+                    ))}
+                  </select>
+                  
+                  {/* Phone Number Input */}
+                  <input
+                    type="tel"
+                    value={noWhatsapp}
+                    onChange={(e) => {
+                      // Hanya izinkan angka
+                      const value = e.target.value.replace(/\D/g, '');
+                      setNoWhatsapp(value);
+                    }}
+                    placeholder="8123456789"
+                    className="flex-1 pl-4 py-3 rounded-lg border bg-gray-900 border-gray-700 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/20"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 mt-1">
+                  Digunakan untuk data transaksi
+                </p>
               </div>
 
               {/* Voucher Input */}

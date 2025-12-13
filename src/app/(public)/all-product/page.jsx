@@ -114,7 +114,7 @@ export default function AllProductsPage() {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">Semua Produk</h1>
-          <p className="text-sm sm:text-base text-gray-400">Temukan game favorit Anda dan top up dengan mudah</p>
+          <p className="text-sm sm:text-base text-gray-400">Temukan product favorit Anda dan top up dengan mudah</p>
         </div>
 
         {/* Search & Filter Bar */}
@@ -127,7 +127,7 @@ export default function AllProductsPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari game..."
+                placeholder="Cari product..."
                 className={`w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border ${
                   darkMode
                     ? 'bg-gray-800 border-gray-700 focus:border-indigo-600'
