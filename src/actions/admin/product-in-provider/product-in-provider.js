@@ -75,6 +75,8 @@ export async function createProductInProvider(data) {
     });
     return { success: true, id };
   } catch (error) {
+    console.log(error);
+    
     throw new Error("Failed to create Product In Provider");
   }
 }

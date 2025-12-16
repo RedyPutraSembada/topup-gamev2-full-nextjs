@@ -181,7 +181,8 @@ export async function createTransaction(data) {
     if (data.selectedPaymentMethod.payment_method === "saldo" && data.userId) {
       
       // Order ke provider
-      if (productInProvider.type_product_name === "Game") {
+      //? TRANSAKSI GAME
+      if (productInProvider.type_product_name.toUpperCase() === "GAME") {
         const response = await TransactionForProvider(
           productInProvider, 
           values, 
@@ -311,6 +312,86 @@ export async function createTransaction(data) {
             order_id: orderId,
           };
         }
+
+      //? TRANSAKSI JOKI
+      } else if (productInProvider.type_product_name.toUpperCase() === "JOKI") {
+        const saldoUpdated = await trx("user")
+          .where("id", data.userId)
+          .where("saldo", ">=", data.pricing.total) // ✅ Safety check di database level
+          .decrement("saldo", data.pricing.total);
+
+        // Cek apakah update berhasil (affected rows > 0)
+        if (saldoUpdated === 0) {
+          // Update gagal karena saldo tidak cukup (kemungkinan ada transaksi lain)
+          await trx.rollback();
+          return { 
+            success: false, 
+            message: "Gagal memotong saldo (saldo tidak cukup)" 
+          };
+        }
+
+        // ✅ UPDATE VOUCHER dengan atomic increment + WHERE condition
+        // Ini adalah TRIPLE PROTECTION untuk voucher:
+        // 1. Helper check (step 1) - quick validation
+        // 2. Lock + double check (step 2) - prevent concurrent access
+        // 3. Atomic update dengan WHERE (step 6) - final safety net di database
+        if (dataTransaction.voucher_id) {
+          // ⚠️ PENTING: Karena kuota & total_use adalah VARCHAR, kita harus hati-hati
+          // Gunakan CAST untuk memastikan comparison numerik yang benar
+          // CAST(...) untuk ensure hasil tetap string (sesuai tipe kolom VARCHAR)
+          const voucherUpdated = await trx("vouchers")
+            .where("id", dataTransaction.voucher_id)
+            .whereRaw("CAST(total_use AS UNSIGNED) < CAST(kuota AS UNSIGNED)") // ✅ Atomic check di database
+            .update({
+              // Convert ke number, tambah 1, convert kembali ke string
+              total_use: trx.raw("CAST(CAST(total_use AS UNSIGNED) + 1 AS CHAR)"),
+              updated_at: trx.fn.now()
+            });
+
+          // Cek apakah update berhasil
+          if (voucherUpdated === 0) {
+            // Voucher penuh (meskipun sudah di-lock, ini sebagai safety net terakhir)
+            await trx.rollback();
+            return { 
+              success: false, 
+              message: "Voucher sudah mencapai batas penggunaan" 
+            };
+          }
+        }
+
+        // ✅ UPDATE STATUS TRANSAKSI jadi Success
+        await trx("transactions")
+          .where("order_id", orderId)
+          .update({
+            payment_progress: "Success",
+            provider_order_id: "joki-transaction-saldo",
+            updated_at: trx.fn.now(),
+          });
+
+        // ========================================
+        // 7. COMMIT TRANSACTION (Simpan semua perubahan)
+        // ========================================
+        // Semua perubahan (saldo, voucher, transaksi) disimpan secara atomic
+        // Jika salah satu gagal di atas, semua akan di-rollback
+        await trx.commit();
+        await resend.emails.send({
+          from: "support@goxpay.id",
+          to: "goxpay.id@gmail.com",
+          subject: "Information Transaction",
+          react: TransactionEmail({
+            nameProduct: data.selectedPackage.name,
+            noWa: data.no_wa,
+            statusTransaction: "success",
+            inputData: data.userInputs,
+            amountPayment: data.pricing.total
+          }),
+        });
+
+        return {
+          success: true,
+          message: "Transaksi Berhasil",
+          order_id: orderId,
+        };
       } else {
         await trx.rollback();
         return {

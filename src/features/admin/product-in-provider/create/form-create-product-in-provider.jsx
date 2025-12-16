@@ -240,6 +240,12 @@ export function FormCreateProductInProvider({ products, providerProducts }) {
                           {provider.label}
                         </SelectItem>
                       ))}
+                      <SelectItem
+                          key={99}
+                          value={'99'}
+                        >
+                          Tanpa Provider
+                        </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

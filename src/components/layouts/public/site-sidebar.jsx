@@ -39,7 +39,7 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
           <nav className="space-y-2">
             <div className="text-xs font-bold text-slate-500 mb-4 px-3 tracking-wider">MENU</div>
             
-            <a
+            <Link
               href="/"
               className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive("/") 
@@ -52,9 +52,9 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
               )}
               <Home className={`w-5 h-5 ${isActive("/") ? "animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
               <span className="text-sm font-medium">Home</span>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/all-product"
               className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive("/all-product") 
@@ -67,9 +67,9 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
               )}
               <Gamepad2 className={`w-5 h-5 ${isActive("/all-product") ? "animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
               <span className="text-sm font-medium">Semua games</span>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/all-transaction"
               className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive("/all-transaction") 
@@ -82,9 +82,9 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
               )}
               <CreditCard className={`w-5 h-5 ${isActive("/all-transaction") ? "animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
               <span className="text-sm font-medium">Cek Transaksi</span>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/all-news"
               className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive("/all-news") 
@@ -97,9 +97,9 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
               )}
               <Newspaper className={`w-5 h-5 ${isActive("/all-news") ? "animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
               <span className="text-sm font-medium">Berita</span>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/cek-region-mobile-legend"
               className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive("/cek-region-mobile-legend") 
@@ -112,7 +112,7 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
               )}
               <Globe className={`w-5 h-5 ${isActive("/cek-region-mobile-legend") ? "animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
               <span className="text-sm font-medium">Cek Region</span>
-            </a>
+            </Link>
           </nav>
         </div>
       </aside>
@@ -154,7 +154,7 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
           <nav className="space-y-2">
             <div className="text-xs font-bold text-slate-500 mb-4 px-3 tracking-wider">MENU</div>
             
-            <a
+            <Link
               href="/"
               onClick={onClose}
               className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
@@ -168,9 +168,9 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
               )}
               <Home className={`w-5 h-5 ${isActive("/") ? "animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
               <span className="text-sm font-medium">Home</span>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/all-product"
               onClick={onClose}
               className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
@@ -184,9 +184,9 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
               )}
               <Gamepad2 className={`w-5 h-5 ${isActive("/all-product") ? "animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
               <span className="text-sm font-medium">Semua games</span>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/all-transaction"
               onClick={onClose}
               className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
@@ -200,9 +200,9 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
               )}
               <CreditCard className={`w-5 h-5 ${isActive("/all-transaction") ? "animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
               <span className="text-sm font-medium">Cek Transaksi</span>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/all-news"
               onClick={onClose}
               className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
@@ -216,9 +216,9 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
               )}
               <Newspaper className={`w-5 h-5 ${isActive("/all-news") ? "animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
               <span className="text-sm font-medium">Berita</span>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/cek-region-mobile-legend"
               onClick={onClose}
               className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
@@ -232,7 +232,7 @@ export default function Sidebar({dataLogo, isOpen, onClose}) {
               )}
               <Globe className={`w-5 h-5 ${isActive("/cek-region-mobile-legend") ? "animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
               <span className="text-sm font-medium">Cek Region</span>
-            </a>
+            </Link>
           </nav>
         </div>
       </aside>
