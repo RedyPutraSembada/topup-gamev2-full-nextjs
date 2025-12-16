@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, Gamepad2, CreditCard, Newspaper } from 'lucide-react'
+import { Home, Gamepad2, CreditCard, Newspaper, Globe } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
@@ -17,19 +17,9 @@ export function BottomNavigator() {
 
   const navItems = [
     {
-      title: 'Home',
-      path: '/',
-      icon: Home,
-    },
-    {
       title: 'Semua games',
       path: '/all-product',
       icon: Gamepad2,
-    },
-    {
-      title: 'Logo', // Special item untuk logo
-      path: '/',
-      isLogo: true,
     },
     {
       title: 'Cek Transaksi',
@@ -37,9 +27,19 @@ export function BottomNavigator() {
       icon: CreditCard,
     },
     {
+      title: 'Logo', // Special item untuk logo
+      path: '/',
+      isLogo: true,
+    },
+    {
       title: 'Berita',
       path: '/all-news',
       icon: Newspaper,
+    },
+    {
+      title: 'Cek Region',
+      path: '/cek-region-mobile-legend',
+      icon: Globe,
     },
   ]
 

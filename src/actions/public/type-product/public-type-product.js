@@ -90,7 +90,8 @@ export async function getAllPublicTypeProduct() {
     const data = await db("type_products").select(
       "name as label",
       "id as value"
-    );
+    )
+    .where("is_active", 1);
     return data;
   } catch (error) {
     throw new Error("Failed to get Public Type Product");

@@ -37,3 +37,19 @@ export function toIndoDatetime(dateString) {
 
   return `${dd} ${mm} ${yyyy}, ${hh}:${min} WIB`;
 }
+
+
+export function parseMessage(message) {
+  const userId = message.match(/User ID:\s*(.+)/)?.[1] ?? null
+  const serverId = message.match(/Server ID:\s*(.+)/)?.[1] ?? null
+  const nickname = message.match(/In-Game Nickname:\s*(.+)/)?.[1] ?? null
+  const country = message.match(/Country:\s*(.+)/)?.[1] ?? null
+
+  return {
+    userId,
+    serverId,
+    nickname,
+    country,
+    fullMessage: message,
+  }
+}
