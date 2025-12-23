@@ -269,8 +269,8 @@ export function PublicFormProduct({ product, paymentMethod }) {
         payment_method:
           paymentMethods.find((pm) => pm.id === selectedPayment)?.name !==
           "saldo"
-            // ? "e-payment"
-            ? "saldo"
+            ? "e-payment"
+            // ? "saldo"
             : "saldo", //->TO DATABASE
         name: paymentMethods.find((pm) => pm.id === selectedPayment)?.name,
         image: paymentMethods.find((pm) => pm.id === selectedPayment)?.image,
